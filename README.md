@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Parent Supporting System for an Autistic Child
 
 ## Project Overview
@@ -24,7 +23,7 @@ It aims to improve **parent engagement, behavior monitoring, and learning develo
 - Stay updated with new posts, events, and resources.
 
 **Behavior Tracking System**  
-- Record and analyze your child’s behavioral patterns.
+- Record and analyze your child's behavioral patterns.
 
 **Daily Planner**  
 - Schedule activities and track daily routines.
@@ -44,23 +43,22 @@ It aims to improve **parent engagement, behavior monitoring, and learning develo
 ---
 
 ## Project Structure
-
 project-root/
 │
-├─ assets/ # CSS, JS, images, icons/n
-├─ auth/ # User authentication (login, registration)\n
+├─ assets/ # CSS, JS, images, icons
+├─ auth/ # User authentication (login, registration)
 ├─ config/ # Database connection and common functions
 │ ├─ config.php
-│ └─ function.php
+│ └─ functions.php
 ├─ database/ # SQL dump for database setup
-│ └─ autism_support_system_(7).sql
+│ └─ autism_support_system.sql
 ├─ modules/ # Functional modules
 │ ├─ social/ # Newsfeed, profile, therapy logs
 │ ├─ planner/ # Daily planner, events
-│ ├─ reports/ # Behavioral analysis, patterns, Q&A, resources
-│ └─ behavior/ # Behavioral tracking and analysis
+│ └─ reports/ # Behavioral analysis, Q&A, resources
 ├─ includes/ # Header, footer, and common templates
 │ └─ header.php
+├─ uploads/ # User uploaded files
 ├─ index.php # Landing page
 └─ README.md # Project documentation
 
@@ -87,7 +85,7 @@ project-root/
 
 ### Social Module
 - **Newsfeed:** Interact with other parents, share posts, and like/comment.  
-- **Profile Management:** Update personal info and child’s data.  
+- **Profile Management:** Update personal info and child's data.  
 - **Log Therapy:** Track and maintain therapy sessions.  
 
 ### Planner Module
@@ -97,7 +95,7 @@ project-root/
 ### Reports Module
 - **Behavior Analysis:** Evaluate behavioral patterns and track progress.  
 - **Q&A:** Post questions and receive advice from experts.  
-- **Resources:** Access educational content for children’s development.  
+- **Resources:** Access educational content for children's development.  
 
 ---
 
@@ -105,51 +103,23 @@ project-root/
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/sayma-sultana-isra/iamspecial.com.git
-cd iamspecial.com
-2.Database Setup
-
+git clone https://github.com/Fazley13/Autism-Support.git
+cd Autism-Support
+2. Database Setup
 Open phpMyAdmin and create a new database.
 
-Import database/autism_support_system_(7).sql.
+Import database/autism_support_system.sql.
 
 3. Configure Database Connection
-
-Update config/config.php with your MySQL credentials.
-
+Update config/config.php with your MySQL credentials:
+define('DB_SERVER', 'localhost');
+define('DB_USERNAME', 'root');
+define('DB_PASSWORD', '');
+define('DB_NAME', 'autism_support_system');
 4. Run the Project
-
 Start XAMPP (Apache + MySQL).
 
-Open http://localhost/project-root/ in your browser.
+Open http://localhost/Autism-Support/ in your browser.
 
 5. Register / Login
-
 Use the registration module to create your first account and explore features.
-
-Contributing
-
-We welcome contributions from developers, parents, and educators!
-
-Fork the repository
-
-Create a feature branch
-
-Submit a pull request
-
-Contact
-
-
-
-
-
-
-
-Developer: Sayma Sultana
-
-Email: saymasultana@example.com
-
-GitHub: github.com/sayma-sultana-isra
-=======
-# Autism-Support
->>>>>>> c45f73b08187bb6f2459adabbb33e01d31f9ef7e
