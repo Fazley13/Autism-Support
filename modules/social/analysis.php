@@ -1,6 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
 include_once '../../config/config.php';
+if (!isLoggedIn()) { redirect('auth/login.php'); }
 
 // Make sure the user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -282,7 +283,7 @@ $behaviorResult = executeQuery($conn, $behaviorQuery, ["i", $userId]);
             <table>
                 <tr>
                     <th>Session Type</th>
-                    <th>Average Feedback Score</th>
+                    <th>Average feedback Score</th>
                     <th>Average Duration (minutes)</th>
                 </tr>
                 <?php while ($row = $effectivenessResult->fetch_assoc()): ?>

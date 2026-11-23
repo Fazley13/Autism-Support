@@ -104,13 +104,13 @@
 
             <button type="submit">Log Session</button>
         </form>
-        <a href="feedback.php" class="feedback-button">Feedback</a>
+        <a href="feedback.php" class="feedback-button">feedback</a>
         <a href="analysis.php" class="analysis-button">Analysis</a>
     </div>
 </body>
 </html> logtherapy.php
 [01:19, 1/27/2025] Sayem: <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
 include_once '../../config/config.php';
 
 if (!isset($_SESSION['user_id'])) {

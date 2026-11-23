@@ -1,0 +1,5 @@
+.env
+config/config.local.php
+public/
+.vercel/
+node_modules/

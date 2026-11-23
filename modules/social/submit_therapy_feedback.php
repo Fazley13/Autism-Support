@@ -1,7 +1,8 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
 include_once '../../config/config.php';
-include '../../includes/header.php';
+if (!isLoggedIn()) { redirect('auth/login.php'); }
+
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $session_id = $_POST['session_id'];
@@ -12,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->bind_param("iis", $session_id, $feedback_score, $comments);
 
     if ($stmt->execute()) {
-        echo "Feedback submitted successfully.";
+        echo "feedback submitted successfully.";
     } else {
         echo "Error: " . $stmt->error;
     }

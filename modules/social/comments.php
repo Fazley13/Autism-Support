@@ -4,11 +4,11 @@ include_once '../../config/config.php';
 $postId = $_GET['post_id'];
 
 $commentsQuery = "
-    SELECT Comments.*, User.username 
-    FROM Comments
-    JOIN User ON Comments.user_id = User.user_id
-    WHERE Comments.post_id = ?
-    ORDER BY Comments.created_at ASC
+    SELECT comments.*, user.username 
+    FROM comments
+    JOIN user ON comments.user_id = user.user_id
+    WHERE comments.post_id = ?
+    ORDER BY comments.created_at ASC
 ";
 
 $stmt = $conn->prepare($commentsQuery);

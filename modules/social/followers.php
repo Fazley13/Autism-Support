@@ -1,108 +1,37 @@
 <?php
-session_start();
-include_once '../../config/config.php';
-include '../../includes/header.php';
+require_once __DIR__ . '/../../includes/bootstrap.php';
+require_login();
 
-if (!isset($_SESSION['user_id'])) {
-    header("Location: " . SITE_URL . "auth/login.php");
-    exit();
-}
+$uid = current_user_id();
+$id = get_int('user_id', $uid);
+$owner = db_one('SELECT user_id, username, first_name, last_name FROM user WHERE user_id = ?', 'i', $id);
+if (!$owner) { http_response_code(404); render_error_page('Profile not found', 'This member does not exist.'); }
 
-$userId = $_GET['user_id'];
+$people = db_all("SELECT u.user_id, u.username, u.first_name, u.last_name, u.profile_photo, u.location FROM followers f JOIN user u ON u.user_id = f.follower_user_id WHERE f.user_id = ? ORDER BY f.follower_id DESC", 'i', $id);
+$myFollowing = array_column(db_all('SELECT user_id FROM followers WHERE follower_user_id = ?', 'i', $uid), 'user_id');
 
-$followerListQuery = "
-    SELECT u.user_id, u.username, u.profile_photo 
-    FROM followers f 
-    JOIN user u ON f.follower_user_id = u.user_id 
-    WHERE f.user_id = ?
-";
-$stmt = $conn->prepare($followerListQuery);
-$stmt->bind_param("i", $userId);
-$stmt->execute();
-$followerList = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-$stmt->close();
+$page_title = 'Followers'; $active = 'profile';
+$extra_js = ['assets/js/newsfeed.js'];
+include ROOT_PATH . '/includes/header.php';
 ?>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Followers List</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f6fa;
-            color: #2c3e50;
-        }
-        .container {
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 20px;
-            background: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        .heading {
-            font-size: 1.5em;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .user-list {
-            list-style: none;
-            padding: 0;
-        }
-        .user-item {
-            display: flex;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #ddd;
-        }
-        .user-item:last-child {
-            border-bottom: none;
-        }
-        .user-photo {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            overflow: hidden;
-            margin-right: 15px;
-        }
-        .user-photo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .user-info {
-            flex: 1;
-        }
-        .user-info a {
-            text-decoration: none;
-            color: #3498db;
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1 class="heading">Followers List</h1>
-        <ul class="user-list">
-            <?php foreach ($followerList as $user): ?>
-            <li class="user-item">
-                <div class="user-photo">
-                    <?php if ($user['profile_photo']): ?>
-                        <img src="<?php echo SITE_URL . 'uploads/profile_photos/' . htmlspecialchars($user['profile_photo']); ?>" alt="Profile Photo">
-                    <?php else: ?>
-                        <img src="<?php echo SITE_URL . 'assets/images/default-avatar.jpg'; ?>" alt="Default Avatar">
-                    <?php endif; ?>
-                </div>
-                <div class="user-info">
-                    <a href="view_profile.php?user_id=<?php echo $user['user_id']; ?>"><?php echo htmlspecialchars($user['username']); ?></a>
-                </div>
-            </li>
-            <?php endforeach; ?>
-        </ul>
+<script>window.PAGE = { api: <?= json_encode(url('modules/social/social_api.php')) ?>, me: <?= $uid ?> };</script>
+<div class="container-sm">
+    <div class="page-header">
+        <div><h1><i class="fa-solid fa-user-group"></i> Followers</h1>
+            <p><a href="<?= e(url('modules/social/view_profile.php?user_id=' . $id)) ?>">← <?= e(display_name($owner)) ?></a> · <?= count($people) ?> <?= count($people) === 1 ? 'person' : 'people' ?></p></div>
     </div>
-</body>
-</html>
+    <div class="card">
+        <?php if (!$people): ?><div class="empty-state"><i class="fa-solid fa-user-group empty-icon"></i><p class="mb-0">No followers yet.</p></div><?php endif; ?>
+        <?php foreach ($people as $p): ?>
+            <div class="person-row">
+                <a href="<?= e(url('modules/social/view_profile.php?user_id=' . $p['user_id'])) ?>"><img class="avatar" src="<?= e(avatar_url($p)) ?>" alt=""></a>
+                <div class="who"><a href="<?= e(url('modules/social/view_profile.php?user_id=' . $p['user_id'])) ?>"><?= e(display_name($p)) ?></a>
+                    <div class="text-muted text-sm">@<?= e($p['username']) ?><?= $p['location'] ? ' · ' . e($p['location']) : '' ?></div></div>
+                <?php if ((int) $p['user_id'] !== $uid): ?>
+                    <button class="btn btn-outline btn-sm" type="button" data-follow="<?= (int) $p['user_id'] ?>"><?= in_array($p['user_id'], $myFollowing) ? 'Following' : 'Follow' ?></button>
+                <?php endif; ?>
+            </div>
+        <?php endforeach; ?>
+    </div>
+</div>
+<?php include ROOT_PATH . '/includes/footer.php'; ?>

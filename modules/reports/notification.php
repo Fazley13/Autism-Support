@@ -1,176 +1,42 @@
 <?php
-// Include the database connection
-include_once '../../config/config.php';
+require_once __DIR__ . '/../../includes/bootstrap.php';
+require_login();
 
-session_start();
-
-// Check if the user is logged in
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit();
-}
-
-$user_id = $_SESSION['user_id'];
-$message = "";
-
-// Handle Mark as Read
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mark_as_read'])) {
-    $stmt = $conn->prepare("UPDATE notifications SET status = 'read' WHERE user_id = ?");
-    $stmt->bind_param("i", $user_id);
-    $stmt->execute();
-    $message = "Notifications marked as read.";
-}
-
-// Fetch Notifications for the Logged-in User
-$notif_query = "SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC";
-$notif_stmt = $conn->prepare($notif_query);
-$notif_stmt->bind_param("i", $user_id);
-$notif_stmt->execute();
-$notifications = $notif_stmt->get_result();
-$unread_count = 0;
-// Fetch notifications for the logged-in user
-$user_id = $_SESSION['user_id'];
-$fetch_notifications_query = "SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC";
-$stmt = $conn->prepare($fetch_notifications_query);
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$notifications_result = $stmt->get_result();
-
-// Display notifications
-while ($notification = $notifications_result->fetch_assoc()) {
-    echo "<p>{$notification['message']}</p>";
-}
-
-// Count unread notifications
-foreach ($notifications as $notification) {
-    if ($notification['status'] === 'unread') {
-        $unread_count++;
+$uid = current_user_id();
+if (is_post()) {
+    csrf_check();
+    $action = post_str('action');
+    if ($action === 'read_all') { db_exec('UPDATE notifications SET seen = 1 WHERE user_id = ?', 'i', $uid); flash('All notifications marked as read.'); }
+    elseif ($action === 'clear') { db_exec('DELETE FROM notifications WHERE user_id = ?', 'i', $uid); flash('Notifications cleared.'); }
+    elseif ($action === 'open') {
+        $n = db_one('SELECT link FROM notifications WHERE id = ? AND user_id = ?', 'ii', post_int('id'), $uid);
+        db_exec('UPDATE notifications SET seen = 1 WHERE id = ? AND user_id = ?', 'ii', post_int('id'), $uid);
+        redirect($n && $n['link'] && strpos($n['link'], '//') === false ? $n['link'] : 'modules/reports/notification.php');
     }
+    redirect('modules/reports/notification.php');
 }
 
+$filter = ($_GET['f'] ?? '') === 'unread' ? 'unread' : 'all';
+$items = db_all('SELECT id, message, link, seen, created_at FROM notifications WHERE user_id = ?' . ($filter === 'unread' ? ' AND seen = 0' : '') . ' ORDER BY created_at DESC, id DESC LIMIT 100', 'i', $uid);
+$unread = unread_notifications();
+
+$page_title = 'Notifications'; $active = 'notifications';
+include ROOT_PATH . '/includes/header.php';
 ?>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notifications</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f6f8;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        .notification-icon {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 20px 0;
-        }
-        .notification-icon button {
-            position: relative;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .notification-icon button span {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: red;
-            color: white;
-            border-radius: 50%;
-            padding: 5px 10px;
-            font-size: 14px;
-        }
-        .notification-list {
-            border: 1px solid #ddd;
-            background-color: #fff;
-            border-radius: 5px;
-            overflow: hidden;
-        }
-        .notification-list ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .notification-list li {
-            padding: 15px;
-            border-bottom: 1px solid #ddd;
-        }
-        .notification-list li:last-child {
-            border-bottom: none;
-        }
-        .notification-list li p {
-            margin: 0;
-        }
-        .mark-read-btn {
-            display: block;
-            margin: 20px 0;
-            padding: 10px 20px;
-            background-color: #28a745;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Notifications</h1>
-
-        <!-- Notification Icon with Count -->
-        <div class="notification-icon">
-            <h2>Your Notifications</h2>
-            <button>
-                🛎️ Notifications
-                <?php if ($unread_count > 0): ?>
-                    <span><?= $unread_count; ?></span>
-                <?php endif; ?>
-            </button>
-        </div>
-
-        <!-- Notification List -->
-        <div class="notification-list">
-            <ul>
-                <?php if ($notifications->num_rows > 0): ?>
-                    <?php foreach ($notifications as $notification): ?>
-                        <li>
-                            <p><?= htmlspecialchars($notification['message']); ?></p>
-                            <small><?= htmlspecialchars($notification['created_at']); ?></small>
-                            <?php if ($notification['status'] === 'unread'): ?>
-                                <span style="color: red;">(Unread)</span>
-                            <?php endif; ?>
-                        </li>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <li>No notifications available.</li>
-                <?php endif; ?>
-            </ul>
-        </div>
-
-        <!-- Mark All as Read Button -->
-        <form method="POST">
-            <button type="submit" name="mark_as_read" class="mark-read-btn">Mark All as Read</button>
-        </form>
-
-        <?php if (!empty($message)): ?>
-            <p style="text-align: center; color: green;"><?= $message; ?></p>
-        <?php endif; ?>
+<div class="container-sm">
+    <div class="page-header"><div><h1><i class="fa-solid fa-bell"></i> Notifications</h1><p><?= $unread ?> unread</p></div>
+        <div class="btn-group">
+            <form method="post"><?= csrf_field() ?><input type="hidden" name="action" value="read_all"><button class="btn btn-outline btn-sm"<?= $unread ? '' : ' disabled' ?>><i class="fa-solid fa-check-double"></i> Mark all read</button></form>
+            <form method="post" data-confirm="Delete all notifications?"><?= csrf_field() ?><input type="hidden" name="action" value="clear"><button class="btn btn-ghost btn-sm"<?= $items ? '' : ' disabled' ?>><i class="fa-solid fa-trash"></i> Clear all</button></form></div></div>
+    <div class="pills mb-2"><a class="pill<?= $filter === 'all' ? ' active' : '' ?>" href="?">All</a><a class="pill<?= $filter === 'unread' ? ' active' : '' ?>" href="?f=unread">Unread</a></div>
+    <div class="card" style="padding:0;overflow:hidden">
+        <?php if (!$items): ?><div class="empty-state"><i class="fa-regular fa-bell empty-icon"></i><h3>You're all caught up</h3><p class="mb-0">New likes, comments, followers and event RSVPs will show up here.</p></div><?php endif; ?>
+        <?php foreach ($items as $n): ?>
+            <form method="post" style="margin:0"><?= csrf_field() ?><input type="hidden" name="action" value="open"><input type="hidden" name="id" value="<?= (int) $n['id'] ?>">
+                <button type="submit" class="notif<?= $n['seen'] ? '' : ' unread' ?>" style="width:100%;border:0;background:none;font:inherit;text-align:left;cursor:pointer;border-bottom:1px solid var(--border)">
+                    <i class="fa-solid fa-<?= $n['seen'] ? 'bell' : 'circle' ?> text-muted" style="margin-top:.35rem;<?= $n['seen'] ? '' : 'color:var(--accent)' ?>"></i>
+                    <span class="flex-1"><?= e($n['message']) ?><br><span class="text-muted text-xs"><?= e(time_ago($n['created_at'])) ?></span></span></button></form>
+        <?php endforeach; ?>
     </div>
-</body>
-</html>
+</div>
+<?php include ROOT_PATH . '/includes/footer.php'; ?>

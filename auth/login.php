@@ -1,98 +1,72 @@
 <?php
-require_once '../config/config.php';
-require_once '../config/functions.php';
+require_once __DIR__ . '/../includes/bootstrap.php';
 
-session_start();
+if (isLoggedIn() && current_user()) {
+    redirect('modules/social/newsfeed.php');
+}
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = sanitizeInput($_POST['email']);
-    $password = sanitizeInput($_POST['password']);
+$error = '';
+$email = '';
+$next = $_GET['next'] ?? ($_POST['next'] ?? '');
 
-    $sql = "SELECT * FROM User WHERE email = '$email'";
-    $result = executeQuery($sql);
-    $user = $result->fetch_assoc();
+if (is_post()) {
+    csrf_check();
+    $email = post_str('email', 100);
+    $password = (string) ($_POST['password'] ?? '');
 
-    if ($user && password_verify($password, $user['password'])) {
-        $_SESSION['user_id'] = $user['user_id'];
-        header("Location: ../modules/social/newsfeed.php");
-        exit();
+    // tiny brute-force throttle (per session)
+    $_SESSION['login_fail'] = $_SESSION['login_fail'] ?? ['n' => 0, 't' => 0];
+    if ($_SESSION['login_fail']['n'] >= 5 && time() - $_SESSION['login_fail']['t'] < 30) {
+        $error = 'Too many attempts. Please wait 30 seconds and try again.';
     } else {
-        $error = "Invalid email or password.";
+        $user = db_one('SELECT user_id, password FROM user WHERE email = ? LIMIT 1', 's', $email);
+        if ($user && password_verify($password, $user['password'])) {
+            session_regenerate_id(true);
+            $_SESSION['login_fail'] = ['n' => 0, 't' => 0];
+            $_SESSION['user_id'] = (int) $user['user_id'];
+            redirect(safe_next($next));
+        }
+        $_SESSION['login_fail']['n']++;
+        $_SESSION['login_fail']['t'] = time();
+        $error = 'Invalid email or password.';
     }
 }
+
+$page_title = 'Log in';
+$body_class = 'auth-body';
+include ROOT_PATH . '/includes/header.php';
 ?>
+<div class="auth-wrap">
+    <div class="auth-shell">
+        <aside class="auth-art" aria-hidden="true">
+            <h2>Welcome back</h2>
+            <p>Pick up right where you left off – your routines, notes and community are waiting.</p>
+            <ul><li><i class="fa-solid fa-heart"></i> Friendly community of parents</li><li><i class="fa-solid fa-chart-line"></i> Track behaviour &amp; progress</li><li><i class="fa-solid fa-list-check"></i> Predictable daily routines</li></ul>
+        </aside>
+    <div class="auth-card">
+        <img class="auth-logo" src="<?= e(asset('images/logo-mark.svg')) ?>" alt="">
+        <h1>Welcome back</h1>
+        <p class="sub">Log in to continue to <?= e(SITE_NAME) ?></p>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Login</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: url('https://cdn.prod.website-files.com/66390c6e162a2070bfe399de/6697e074cd1552e6928ce01b_66571b9e9e7f72e81d8552ed_Best%2520Autism%2520Treatment%2520for%2520Children.jpeg') no-repeat center center fixed; /* Replace with your image URL */
-            background-size: cover;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
+        <?php if ($error): ?><?= alert_html($error, 'danger') ?><?php endif; ?>
 
-        .login {
-            background-color: rgba(255, 255, 255, 0.8);
-            padding: 20px 40px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        .login form {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .login input {
-            margin-bottom: 15px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-
-        .login button {
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            background-color: #007bff;
-            color: #fff;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        .login button:hover {
-            background-color: #0056b3;
-        }
-
-        .login p {
-            color: red;
-            margin-top: 10px;
-        }
-    </style>
-</head>
-<body>
-    <div class="login">
-        <form action="login.php" method="post">
-            <input type="email" name="email" placeholder="Email" required>
-            <input type="password" name="password" placeholder="Password" required>
-            <button type="submit">Login</button>
+        <form method="post" action="" novalidate>
+            <?= csrf_field() ?>
+            <input type="hidden" name="next" value="<?= e($next) ?>">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <div class="input-icon"><i class="fa-solid fa-envelope"></i>
+                    <input type="email" id="email" name="email" value="<?= e($email) ?>" autocomplete="email" required autofocus></div>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-icon"><i class="fa-solid fa-lock"></i>
+                    <input type="password" id="password" name="password" autocomplete="current-password" required></div>
+            </div>
+            <button class="btn btn-primary btn-block btn-lg" type="submit">Log in</button>
         </form>
-        <?php if (isset($error)): ?>
-            <p><?php echo $error; ?></p>
-        <?php endif; ?>
+        <p class="text-center text-muted mt-3 mb-0">New here? <a href="<?= e(url('auth/signup.php')) ?>">Create an account</a></p>
     </div>
-</body>
-</html>
+    </div>
+</div>
+<?php include ROOT_PATH . '/includes/footer.php'; ?>

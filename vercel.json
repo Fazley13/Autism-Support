@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "mkdir -p public && cp -r assets public/assets && cp -r uploads public/uploads",
+  "outputDirectory": "public",
+  "functions": {
+    "api/*.php": { "runtime": "vercel-php@0.7.4", "maxDuration": 30 }
+  },
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/api/index.php" }
+  ]
+}

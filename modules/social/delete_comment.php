@@ -1,14 +1,15 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
 include_once '../../config/config.php';
+if (!isLoggedIn()) { redirect('auth/login.php'); }
 
 $commentId = $_GET['comment_id'];
 $userId = $_SESSION['user_id'];
 
 // cmnt ownr or pst ownr
-$commentCheckQuery = "SELECT Comments.*, Post.user_id AS post_owner_id FROM Comments
-                      JOIN Post ON Comments.post_id = Post.post_id
-                      WHERE Comments.comment_id = ? AND (Comments.user_id = ? OR Post.user_id = ?)";
+$commentCheckQuery = "SELECT comments.*, post.user_id AS post_owner_id FROM comments
+                      JOIN post ON comments.post_id = post.post_id
+                      WHERE comments.comment_id = ? AND (comments.user_id = ? OR post.user_id = ?)";
 $stmt = $conn->prepare($commentCheckQuery);
 $stmt->bind_param('iii', $commentId, $userId, $userId);
 $stmt->execute();
@@ -20,7 +21,7 @@ if ($result->num_rows == 0) {
     exit();
 }
 
-$deleteCommentQuery = "DELETE FROM Comments WHERE comment_id = ?";
+$deleteCommentQuery = "DELETE FROM comments WHERE comment_id = ?";
 $stmt = $conn->prepare($deleteCommentQuery);
 $stmt->bind_param('i', $commentId);
 $stmt->execute();

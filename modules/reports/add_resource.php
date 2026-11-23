@@ -1,166 +1,53 @@
 <?php
-// Include the database connection
-include_once '../../config/config.php';
-// Include the functions file
-include_once 'functions.php';  // Adjust the path as necessary
+require_once __DIR__ . '/../../includes/bootstrap.php';
+require_login();
 
-// Now you can call insertNotification() in your code
-
-
-session_start();
-
-// Check if the user is logged in
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit();
+$uid = current_user_id();
+$id = get_int('id', post_int('id'));
+$types = db_all('SELECT id, type_name FROM resource_types ORDER BY type_name');
+$r = ['title' => '', 'description' => '', 'resource_type_id' => $types[0]['id'] ?? 0, 'external_link' => ''];
+if ($id) {
+    $row = db_one('SELECT r.*, d.external_link, d.file_path FROM resources r LEFT JOIN resource_details d ON d.resource_id = r.id WHERE r.id = ? AND r.user_id = ?', 'ii', $id, $uid);
+    if (!$row) { flash('Resource not found or not yours.', 'danger'); redirect('modules/reports/resource.php'); }
+    $r = $row;
 }
-
-$user_id = $_SESSION['user_id'];
-$message = "";
-
-// Ensure the uploads directory exists
-$target_dir = "uploads/";
-if (!is_dir($target_dir)) {
-    mkdir($target_dir, 0777, true);
-}
-
-// Handle form submission (Add Resource)
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $title = $_POST['title'];
-    $description = $_POST['description'];
-    $resource_type_id = $_POST['resource_type_id'];
-    $file_path = null;
-    $external_link = null;
-
-    // Handle file upload if it's a document
-    if ($resource_type_id == 1 && !empty($_FILES['file']['name'])) {
-        $file_name = basename($_FILES['file']['name']);
-        $target_file = $target_dir . $file_name;
-
-        if (move_uploaded_file($_FILES['file']['tmp_name'], $target_file)) {
-            $file_path = $target_file;
+$errors = [];
+if (is_post()) {
+    csrf_check();
+    $r['title'] = post_str('title', 255); $r['description'] = post_str('description', 3000);
+    $r['resource_type_id'] = post_int('resource_type_id'); $r['external_link'] = post_str('external_link', 255);
+    if ($r['title'] === '') $errors[] = 'Please enter a title.';
+    if (!db_one('SELECT 1 AS x FROM resource_types WHERE id = ?', 'i', $r['resource_type_id'])) $errors[] = 'Please choose a type.';
+    if ($r['external_link'] === '' && empty($row['file_path'])) $errors[] = 'Please add a link (website or video URL).';
+    if ($r['external_link'] !== '' && !preg_match('~^https?://[^\s]+$~i', $r['external_link'])) $errors[] = 'The link must start with http:// or https://';
+    if (!$errors) {
+        if ($id) {
+            db_exec('UPDATE resources SET title=?, description=?, resource_type_id=? WHERE id=? AND user_id=?', 'ssiii', $r['title'], $r['description'], $r['resource_type_id'], $id, $uid);
+            if (db_one('SELECT 1 AS x FROM resource_details WHERE resource_id = ?', 'i', $id)) db_exec('UPDATE resource_details SET external_link=? WHERE resource_id=?', 'si', $r['external_link'] ?: null, $id);
+            else db_exec('INSERT INTO resource_details (resource_id, external_link) VALUES (?,?)', 'is', $id, $r['external_link']);
+            flash('Resource updated.');
         } else {
-            $message = "File upload failed. Please check directory permissions.";
+            db_exec('INSERT INTO resources (user_id, title, description, resource_type_id) VALUES (?,?,?,?)', 'issi', $uid, $r['title'], $r['description'], $r['resource_type_id']);
+            db_exec('INSERT INTO resource_details (resource_id, external_link) VALUES (?,?)', 'is', db_insert_id(), $r['external_link']);
+            flash('Thanks for sharing!');
         }
-    }
-
-    // Handle external link if it's a video or link
-    if (($resource_type_id == 2 || $resource_type_id == 3) && !empty($_POST['external_link'])) {
-        $external_link = $_POST['external_link'];
-    }
-
-    // Insert resource into the database
-    $conn->begin_transaction();
-    try {
-        $stmt = $conn->prepare("INSERT INTO resources (user_id, title, description, resource_type_id) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("issi", $user_id, $title, $description, $resource_type_id);
-        $stmt->execute();
-        $resource_id = $stmt->insert_id;
-
-        $detail_stmt = $conn->prepare("INSERT INTO resource_details (resource_id, file_path, external_link) VALUES (?, ?, ?)");
-        $detail_stmt->bind_param("iss", $resource_id, $file_path, $external_link);
-        $detail_stmt->execute();
-
-        $conn->commit();
-        $message = "Resource added successfully!";
-    } catch (Exception $e) {
-        $conn->rollback();
-        $message = "Error: " . $e->getMessage();
+        redirect('modules/reports/resource.php');
     }
 }
-
-// Fetch resource types
-$type_query = "SELECT id, type_name FROM resource_types";
-$type_result = $conn->query($type_query);
-
-
-
+$page_title = $id ? 'Edit resource' : 'Share a resource'; $active = 'resources';
+include ROOT_PATH . '/includes/header.php';
 ?>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Resource</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f6f8;
-        }
-        .form-container {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            background-color: #ffffff;
-            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        label, select, input, textarea, button {
-            width: 100%;
-            margin: 10px 0;
-            padding: 10px;
-        }
-        .success-message {
-            text-align: center;
-            color: green;
-        }
-        .btn-back {
-            display: inline-block;
-            margin-top: 20px;
-            text-align: center;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-        .btn-back:hover {
-            background-color: #0056b3;
-        }
-    </style>
-</head>
-<body>
-    <h1>Add New Resource</h1>
-
-    <!-- Success/Error Message -->
-    <?php if (!empty($message)) : ?>
-        <p class="success-message"><?= htmlspecialchars($message); ?></p>
-    <?php endif; ?>
-
-    <div class="form-container">
-        <form method="POST" enctype="multipart/form-data">
-            <label for="title">Title:</label>
-            <input type="text" name="title" id="title" required>
-
-            <label for="description">Description:</label>
-            <textarea name="description" id="description" rows="4" required></textarea>
-
-            <label for="resource_type_id">Resource Type:</label>
-            <select name="resource_type_id" id="resource_type_id" required>
-                <option value="">Select Type</option>
-                <?php while ($row = $type_result->fetch_assoc()) : ?>
-                    <option value="<?= $row['id']; ?>"><?= htmlspecialchars($row['type_name']); ?></option>
-                <?php endwhile; ?>
-            </select>
-
-            <label for="file">Upload Document:</label>
-            <input type="file" name="file" id="file">
-
-            <label for="external_link">Video Link:</label>
-            <input type="url" name="external_link" id="external_link">
-
-            <button type="submit">Add Resource</button>
-        </form>
-    </div>
-
-    <!-- Back to Resources Button -->
-    <a href="resource.php" class="btn-back">Back to Resources</a>
-</body>
-</html>
+<div class="container-sm">
+    <div class="page-header"><h1><i class="fa-solid fa-<?= $id ? 'pen' : 'plus' ?>"></i> <?= e($page_title) ?></h1></div>
+    <form class="card" method="post"><?= csrf_field() ?><input type="hidden" name="id" value="<?= $id ?>">
+        <?php foreach ($errors as $er): ?><?= alert_html($er, 'danger') ?><?php endforeach; ?>
+        <div class="form-group"><label for="title">Title</label><input type="text" id="title" name="title" maxlength="255" value="<?= e($r['title']) ?>" required></div>
+        <div class="form-group"><label for="description">Why is it helpful?</label><textarea id="description" name="description" maxlength="3000"><?= e($r['description']) ?></textarea></div>
+        <div class="form-row">
+            <div class="form-group"><label for="resource_type_id">Type</label><select id="resource_type_id" name="resource_type_id"><?php foreach ($types as $t): ?><option value="<?= (int) $t['id'] ?>"<?= (int) $r['resource_type_id'] === (int) $t['id'] ? ' selected' : '' ?>><?= e(ucfirst($t['type_name'])) ?></option><?php endforeach; ?></select></div>
+            <div class="form-group"><label for="external_link">Link</label><input type="url" id="external_link" name="external_link" value="<?= e($r['external_link']) ?>" placeholder="https://…"><div class="form-hint">YouTube links get a thumbnail and in-page player.</div></div>
+        </div>
+        <div class="btn-group"><button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> Save</button><a class="btn btn-outline" href="<?= e(url('modules/reports/resource.php')) ?>">Cancel</a></div>
+    </form>
+</div>
+<?php include ROOT_PATH . '/includes/footer.php'; ?>

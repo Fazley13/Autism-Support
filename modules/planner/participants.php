@@ -1,109 +1,32 @@
 <?php
-// Database connection
-$conn = new mysqli("localhost", "root", "", "autism_support_system");
+require_once __DIR__ . '/../../includes/bootstrap.php';
+require_login();
 
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+$uid = current_user_id();
+$eid = get_int('event_id');
+$ev = db_one('SELECT event_id, title, date, organizer_id FROM events WHERE event_id = ?', 'i', $eid);
+if (!$ev) { flash('Event not found.', 'danger'); redirect('modules/planner/events.php'); }
+$isOwner = (int) $ev['organizer_id'] === $uid;
 
-session_start();
-$user_id = $_SESSION['user_id']; // Assuming the user is logged in and their ID is stored in session
+$people = db_all("SELECT u.user_id, u.username, u.first_name, u.last_name, u.profile_photo, ep.status
+    FROM event_participants ep JOIN user u ON u.user_id = ep.participant_id WHERE ep.event_id = ? ORDER BY ep.status = 'Going' DESC, u.username", 'i', $eid);
 
-// Handle form submission
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["participate"])) {
-    $event_id = $_POST["event_id"];
-    $status = $_POST["status"];
-
-    if ($status == "Remove") {
-        // Remove user's participation for the event
-        $stmt = $conn->prepare("DELETE FROM event_participants WHERE event_id = ? AND participant_id = ?");
-        $stmt->bind_param("ii", $event_id, $user_id);
-    } else {
-        // Insert or update user's participation status
-        $stmt = $conn->prepare("
-            INSERT INTO event_participants (event_id, participant_id, status) 
-            VALUES (?, ?, ?) 
-            ON DUPLICATE KEY UPDATE status = VALUES(status)
-        ");
-        $stmt->bind_param("iis", $event_id, $user_id, $status);
-    }
-
-    if ($stmt->execute()) {
-        echo "<script>alert('Your status has been updated.');</script>";
-    } else {
-        echo "<script>alert('Error: " . $stmt->error . "');</script>";
-    }
-
-    $stmt->close();
-}
-
-// Fetch events with separate counts for "Interested" and "Going" participants
-$event_participants = $conn->query("
-    SELECT 
-        events.event_id, 
-        events.title, 
-        COUNT(CASE WHEN event_participants.status = 'Interested' THEN 1 END) AS interested_count,
-        COUNT(CASE WHEN event_participants.status = 'Going' THEN 1 END) AS going_count,
-        ep.status AS user_status
-    FROM events 
-    LEFT JOIN event_participants ON events.event_id = event_participants.event_id 
-    LEFT JOIN event_participants ep ON ep.event_id = events.event_id AND ep.participant_id = $user_id
-    GROUP BY events.event_id
-    ORDER BY events.date DESC
-");
+$page_title = 'Attendees'; $active = 'events';
+include ROOT_PATH . '/includes/header.php';
 ?>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Participants Management</title>
-    <style>
-        body { font-family: Arial, sans-serif; background: #f6f8fa; padding: 20px; }
-        .container { max-width: 600px; margin: auto; background: #fff; padding: 20px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); border-radius: 10px; }
-        h2 { text-align: center; color: #444; }
-        ul { list-style-type: none; padding: 0; }
-        li { margin-bottom: 15px; background: #f9f9f9; padding: 10px; border-left: 5px solid #007bff; border-radius: 5px; }
-        form { display: inline-block; margin-left: 10px; }
-        select { padding: 5px; margin-left: 5px; }
-        button { background: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
-        button:hover { background: #0056b3; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h2>Event Participation</h2>
-        <ul>
-            <?php while ($event = $event_participants->fetch_assoc()) { 
-                $user_status = $event['user_status']; ?>
-                <li>
-                    <strong><?php echo $event['title']; ?></strong><br>
-                    - Interested: <?php echo $event['interested_count']; ?><br>
-                    - Going: <?php echo $event['going_count']; ?>
-                    <form method="POST">
-                        <input type="hidden" name="event_id" value="<?php echo $event['event_id']; ?>">
-                        <label for="status">Your Status:</label>
-                        <select name="status" id="status">
-                            <?php if ($user_status == "Interested") { ?>
-                                <option value="Interested" selected>Interested</option>
-                                <option value="Going">Going</option>
-                                <option value="Remove">Remove</option>
-                            <?php } elseif ($user_status == "Going") { ?>
-                                <option value="Going" selected>Going</option>
-                                <option value="Interested">Interested</option>
-                                <option value="Remove">Remove</option>
-                            <?php } else { ?>
-                                <option value="Interested">Interested</option>
-                                <option value="Going">Going</option>
-                            <?php } ?>
-                        </select>
-                        <button type="submit" name="participate">Submit</button>
-                    </form>
-                </li>
-            <?php } ?>
-        </ul>
+<div class="container-sm">
+    <div class="page-header"><div><h1><i class="fa-solid fa-users"></i> Attendees</h1><p><?= e($ev['title']) ?> · <?= e($ev['date']) ?></p></div>
+        <a class="btn btn-outline" href="<?= e(url('modules/planner/events.php')) ?>">← All events</a></div>
+    <div class="card">
+        <?php if (!$people): ?><div class="empty-state"><i class="fa-solid fa-user-group empty-icon"></i><p class="mb-0">No one has RSVP'd yet.</p></div><?php endif; ?>
+        <?php foreach ($people as $p): ?>
+            <div class="person-row">
+                <a href="<?= e(url('modules/social/view_profile.php?user_id=' . $p['user_id'])) ?>"><img class="avatar" src="<?= e(avatar_url($p)) ?>" alt=""></a>
+                <div class="who"><a href="<?= e(url('modules/social/view_profile.php?user_id=' . $p['user_id'])) ?>"><?= e(display_name($p)) ?></a><div class="text-muted text-sm">@<?= e($p['username']) ?></div></div>
+                <span class="badge <?= $p['status'] === 'Going' ? 'badge-success' : 'badge-info' ?>"><?= e($p['status']) ?></span>
+                <?php if ((int) $p['user_id'] !== $uid): ?><a class="btn btn-ghost btn-sm" href="<?= e(url('modules/social/messages.php?with=' . $p['user_id'])) ?>" title="Message"><i class="fa-solid fa-envelope"></i></a><?php endif; ?>
+            </div>
+        <?php endforeach; ?>
     </div>
-</body>
-</html>
+</div>
+<?php include ROOT_PATH . '/includes/footer.php'; ?>

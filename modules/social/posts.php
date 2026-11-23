@@ -1,6 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
 include_once '../../config/config.php';
+if (!isLoggedIn()) { redirect('auth/login.php'); }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $userId = $_SESSION['user_id'];
@@ -18,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Prepare and execute query to insert post
-    $stmt = $conn->prepare("INSERT INTO Post (user_id, content, privacy, category, photo) VALUES (?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO post (user_id, content, privacy, category, photo) VALUES (?, ?, ?, ?, ?)");
     $stmt->bind_param('issss', $userId, $content, $privacy, $category, $photo);
     $stmt->execute();
     $stmt->close();
@@ -32,13 +33,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Create Post</title>
+    <title>Create post</title>
     <link rel="stylesheet" href="../../assets/css/style.css">
 </head>
 <body>
     <?php include '../../includes/navbar.php'; ?>
     <div class="container">
-        <h2>Create a Post</h2>
+        <h2>Create a post</h2>
         <form method="POST" action="" enctype="multipart/form-data">
             <textarea name="content" placeholder="What's on your mind?" required></textarea>
             
@@ -48,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <option value="motivational">Motivational</option>
                 <option value="inspirational">Inspirational</option>
                 <option value="community">Community</option>
-                <option value="events">Events</option>
+                <option value="events">events</option>
             </select>
 
             <input type="file" name="photo" accept="image/*">
@@ -57,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <option value="private">Private</option>
                 <option value="friends-only">Friends Only</option>
             </select>
-            <button type="submit">Post</button>
+            <button type="submit">post</button>
         </form>
     </div>
     <?php include '../../includes/footer.php'; ?>

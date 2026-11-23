@@ -1,30 +1,30 @@
 <?php
-session_start(); 
+if (session_status() === PHP_SESSION_NONE) { session_start(); } 
 include_once '../../config/config.php';
 
 $userId = $_SESSION['user_id'] ?? null; 
 
 if (!$userId) {
-    echo "User not logged in.";
+    echo "user not logged in.";
     exit();
 }
 
 function fetchCategoryContent($conn, $category) {
     switch ($category) {
         case 'motivation':
-            $query = "SELECT motivationcontent AS content FROM MotivationalQuotes ORDER BY RAND() LIMIT 1";
+            $query = "SELECT motivationcontent AS content FROM motivationalquotes ORDER BY RAND() LIMIT 1";
             break;
         case 'inspiration':
-            $query = "SELECT inspirationcontent AS content FROM MotivationalQuotes ORDER BY RAND() LIMIT 1";
+            $query = "SELECT inspirationcontent AS content FROM motivationalquotes ORDER BY RAND() LIMIT 1";
             break;
         case 'community':
             $query = "SELECT content FROM post ORDER BY RAND() LIMIT 1";
             break;
         case 'photos':
-            $query = "SELECT url AS content FROM MotivationalQuotes ORDER BY RAND() LIMIT 1";
+            $query = "SELECT url AS content FROM motivationalquotes ORDER BY RAND() LIMIT 1";
             break;
         case 'website':
-            $query = "SELECT url AS content FROM MotivationalQuotes ORDER BY RAND() LIMIT 1";
+            $query = "SELECT url AS content FROM motivationalquotes ORDER BY RAND() LIMIT 1";
             break;
         default:
             echo json_encode(["error" => "Invalid category."]);

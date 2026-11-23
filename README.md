@@ -1,125 +1,57 @@
-# Parent Supporting System for an Autistic Child
+# ParentConnect – Parent Supporting System for an Autistic Child
 
-## Project Overview
-The **Parent Supporting System for an Autistic Child** is a **web-based application** designed to empower parents, caregivers, and educators with tools and insights to support children with autism effectively.
-
-This system combines **social interaction, educational resources, behavior tracking, and planning tools** in a single, easy-to-use platform.
-
-It aims to improve **parent engagement, behavior monitoring, and learning development** for autistic children.
-
----
+A web app (PHP 8 + MySQL) that gives parents, caregivers and educators one calm place for
+**community, behaviour tracking, daily planning, events, resources, expert Q&A, private messaging and reports**.
 
 ## Features
+| Area | What you get |
+|---|---|
+| Newsfeed | Posts with photos, privacy (public / followers / only me), topics, likes, comments, follow, suggested parents, daily encouragement |
+| Profile | Cover + avatar upload, bio, child details, followers/following, change password |
+| Search | Global search across people, posts, resources, events, questions |
+| Behaviour tracking | Log with 0–5 intensity, edit/delete, filters, **analysis charts, patterns/heat-map, printable report + CSV export** |
+| Daily planner | Tasks, priorities, filters, progress bar, overdue tracking |
+| Events | Create/edit/delete, RSVP (Going / Interested), attendee list, filters |
+| Resources | Links & YouTube videos with in-page player, add/edit/delete |
+| Q&A | Ask, answer, edit/delete, search, notifications |
+| Messaging | Private 1-to-1 chat with live polling and unread badges |
+| Notifications | Bell with unread count; likes, comments, follows, RSVPs, answers |
+| Therapy log | Sessions, therapist, feedback rating, charts |
 
-### Core Features
+## Tech stack
+HTML5 · CSS3 (design system in `assets/css/style.css`, dark-mode aware) · vanilla JS · PHP 8.1+ (mysqli, prepared statements) · MySQL 5.7+/8 or MariaDB 10.4+.
 
-**Newsfeed & Social Interaction**  
-- Posts, comments, likes, and discussions with other parents.
+## Project structure
+```
+api/index.php        Vercel entry point (routes every request to the right PHP file)
+assets/              css, js, images (logo, favicons, default avatars)
+auth/                login, signup, logout
+config/              config.php (env-driven DB + settings), functions.php (helpers)
+database/            autism_support_system.sql (full schema + data + v2 additions), upgrade_v2.sql
+includes/            bootstrap, session (DB-backed), header, footer, behaviour sub-nav
+modules/social/      newsfeed, profile, search, therapy log, messages, APIs
+modules/planner/     daily planner, events, attendees
+modules/behavior/    analysis, patterns, reports, behaviour types
+modules/reports/     behaviour log, resources, Q&A, notifications
+uploads/             legacy sample files (new uploads are stored in the database)
+media.php            serves uploaded images from the `media` table
+vercel.json          Vercel configuration
+```
 
-**Search Functionality**  
-- Quickly find resources, articles, or community discussions.
+## Run locally with XAMPP
+1. Copy the folder to `htdocs/Autism-Support`.
+2. phpMyAdmin → create database `autism_support_system` (collation `utf8mb4_general_ci`) → **Import** `database/autism_support_system.sql`.
+3. Start Apache + MySQL and open `http://localhost/Autism-Support/`.
+4. Default DB settings (root / empty password) work out of the box. To change them, edit the defaults in
+   `config/config.php` or create `config/config.local.php`:
+   ```php
+   <?php return ['DB_HOST'=>'localhost','DB_USER'=>'root','DB_PASS'=>'','DB_NAME'=>'autism_support_system'];
+   ```
+5. Log in with the demo account `demo@parentconnect.test` / `Demo@1234`, or sign up.
+   (Delete the demo user before going public.)
 
-**Notifications**  
-- Stay updated with new posts, events, and resources.
+## Deploy on Vercel
+See **[DEPLOY_VERCEL.md](DEPLOY_VERCEL.md)** for the step-by-step guide.
 
-**Behavior Tracking System**  
-- Record and analyze your child's behavioral patterns.
-
-**Daily Planner**  
-- Schedule activities and track daily routines.
-
-**Events Management**  
-- Create, join, and track events for learning and therapy.
-
-**Educational Resources**  
-- Access curated content for cognitive and behavioral development.
-
-**Messaging System**  
-- Communicate privately with other parents or experts.
-
-**Reports & Analytics**  
-- Generate reports to monitor progress and trends.
-
----
-
-## Project Structure
-project-root/
-│
-├─ assets/ # CSS, JS, images, icons
-├─ auth/ # User authentication (login, registration)
-├─ config/ # Database connection and common functions
-│ ├─ config.php
-│ └─ functions.php
-├─ database/ # SQL dump for database setup
-│ └─ autism_support_system.sql
-├─ modules/ # Functional modules
-│ ├─ social/ # Newsfeed, profile, therapy logs
-│ ├─ planner/ # Daily planner, events
-│ └─ reports/ # Behavioral analysis, Q&A, resources
-├─ includes/ # Header, footer, and common templates
-│ └─ header.php
-├─ uploads/ # User uploaded files
-├─ index.php # Landing page
-└─ README.md # Project documentation
-
-
----
-
-## UI Design
-- **Navbar:** Fixed, gradient-colored, with search and notification icons.  
-- **Dropdown Menus:** Quick access to profile, logout, and other features.  
-- **Color Scheme:** Calming and friendly for parents, using gradients and soft colors.  
-- **Responsive Layout:** Optimized for mobile and desktop screens.  
-
----
-
-## Technology Stack
-- **Frontend:** HTML5, CSS3, JavaScript  
-- **Backend:** PHP  
-- **Database:** MySQL (structured tables for users, posts, events, and reports)  
-- **Server Environment:** XAMPP (Apache + MySQL)  
-
----
-
-## Modules Description
-
-### Social Module
-- **Newsfeed:** Interact with other parents, share posts, and like/comment.  
-- **Profile Management:** Update personal info and child's data.  
-- **Log Therapy:** Track and maintain therapy sessions.  
-
-### Planner Module
-- **Daily Planner:** Schedule tasks and monitor daily routines.  
-- **Events:** Join or create educational and social events.  
-
-### Reports Module
-- **Behavior Analysis:** Evaluate behavioral patterns and track progress.  
-- **Q&A:** Post questions and receive advice from experts.  
-- **Resources:** Access educational content for children's development.  
-
----
-
-## Installation
-
-### 1. Clone the Repository
-```bash
-git clone https://github.com/Fazley13/Autism-Support.git
-cd Autism-Support
-2. Database Setup
-Open phpMyAdmin and create a new database.
-
-Import database/autism_support_system.sql.
-
-3. Configure Database Connection
-Update config/config.php with your MySQL credentials:
-define('DB_SERVER', 'localhost');
-define('DB_USERNAME', 'root');
-define('DB_PASSWORD', '');
-define('DB_NAME', 'autism_support_system');
-4. Run the Project
-Start XAMPP (Apache + MySQL).
-
-Open http://localhost/Autism-Support/ in your browser.
-
-5. Register / Login
-Use the registration module to create your first account and explore features.
+## Themes
+The sun/half-circle button in the top bar cycles **Light → Dark → Calm**. *Calm* is a low-stimulation palette with no animations or shadows, useful for sensory-sensitive users. The choice is remembered in the browser.

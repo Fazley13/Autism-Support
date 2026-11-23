@@ -1,6 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
 include_once '../../config/config.php';
+if (!isLoggedIn()) { redirect('auth/login.php'); }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     echo json_encode(['success' => false, 'message' => 'Invalid request method.']);
@@ -11,7 +12,7 @@ $postId = $_GET['post_id'];
 $userId = $_SESSION['user_id'];
 
 
-$postCheckQuery = "SELECT * FROM Post WHERE post_id = ? AND user_id = ?";
+$postCheckQuery = "SELECT * FROM post WHERE post_id = ? AND user_id = ?";
 $stmt = $conn->prepare($postCheckQuery);
 $stmt->bind_param('ii', $postId, $userId);
 $stmt->execute();
@@ -40,7 +41,7 @@ if (!empty($photo)) {
 }
 
 
-$deletePostQuery = "DELETE FROM Post WHERE post_id = ?";
+$deletePostQuery = "DELETE FROM post WHERE post_id = ?";
 $stmt = $conn->prepare($deletePostQuery);
 $stmt->bind_param('i', $postId);
 if (!$stmt->execute()) {
@@ -51,7 +52,7 @@ if (!$stmt->execute()) {
 $stmt->close();
 
 
-$deleteCommentsQuery = "DELETE FROM Comments WHERE post_id = ?";
+$deleteCommentsQuery = "DELETE FROM comments WHERE post_id = ?";
 $stmt = $conn->prepare($deleteCommentsQuery);
 $stmt->bind_param('i', $postId);
 if (!$stmt->execute()) {
@@ -62,5 +63,5 @@ if (!$stmt->execute()) {
 $stmt->close();
 
 
-echo json_encode(['success' => true, 'message' => 'Post and associated comments deleted successfully.']);
+echo json_encode(['success' => true, 'message' => 'post and associated comments deleted successfully.']);
 ?>

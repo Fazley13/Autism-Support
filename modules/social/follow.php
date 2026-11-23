@@ -1,6 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
 include_once '../../config/config.php';
+if (!isLoggedIn()) { redirect('auth/login.php'); }
 
 $userId = $_GET['user_id'];
 $followerUserId = $_SESSION['user_id'];

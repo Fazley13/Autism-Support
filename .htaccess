@@ -1,6 +1,5 @@
-RewriteEngine On
-
-# Redirect all requests to index.php
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.php [QSA,L]
+# Apache / XAMPP hardening (ignored by Vercel)
+RedirectMatch 404 /(config|includes|database)/
+<FilesMatch "\.(sql|md|env|example|local\.php)$">
+    Require all denied
+</FilesMatch>

@@ -1,85 +1,97 @@
 <?php
-require_once '../config/config.php';
-require_once '../config/functions.php';
+require_once __DIR__ . '/../includes/bootstrap.php';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = sanitizeInput($_POST['username']);
-    $email = sanitizeInput($_POST['email']);
-    $password = sanitizeInput($_POST['password']);
-    $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-
-    $sql = "INSERT INTO User (username, password, email) VALUES ('$username', '$hashedPassword', '$email')";
-    executeQuery($sql);
-
-    header("Location: login.php");
-    exit();
+if (isLoggedIn() && current_user()) {
+    redirect('modules/social/newsfeed.php');
 }
+
+$errors = [];
+$v = ['username' => '', 'email' => '', 'first_name' => '', 'last_name' => ''];
+
+if (is_post()) {
+    csrf_check();
+    $v['username']   = post_str('username', 50);
+    $v['email']      = post_str('email', 100);
+    $v['first_name'] = post_str('first_name', 50);
+    $v['last_name']  = post_str('last_name', 50);
+    $password = (string) ($_POST['password'] ?? '');
+    $confirm  = (string) ($_POST['confirm'] ?? '');
+
+    if (!preg_match('/^[A-Za-z0-9_.-]{3,30}$/', $v['username'])) $errors[] = 'Username must be 3–30 characters: letters, numbers, dot, dash or underscore.';
+    if (!filter_var($v['email'], FILTER_VALIDATE_EMAIL)) $errors[] = 'Please enter a valid email address.';
+    if (strlen($password) < 8) $errors[] = 'Password must be at least 8 characters.';
+    if ($password !== $confirm) $errors[] = 'Passwords do not match.';
+
+    if (!$errors) {
+        if (db_one('SELECT 1 AS x FROM user WHERE email = ?', 's', $v['email'])) $errors[] = 'An account with this email already exists.';
+        if (db_one('SELECT 1 AS x FROM user WHERE username = ?', 's', $v['username'])) $errors[] = 'That username is taken.';
+    }
+    if (!$errors) {
+        $hash = password_hash($password, PASSWORD_DEFAULT);
+        db_exec('INSERT INTO user (username, password, email, first_name, last_name) VALUES (?, ?, ?, ?, ?)',
+            'sssss', $v['username'], $hash, $v['email'], $v['first_name'], $v['last_name']);
+        session_regenerate_id(true);
+        $_SESSION['user_id'] = db_insert_id();
+        flash('Welcome to ' . SITE_NAME . '! Tell the community a little about you and your child.', 'success');
+        redirect('modules/social/profile.php');
+    }
+}
+
+$page_title = 'Create account';
+$body_class = 'auth-body';
+include ROOT_PATH . '/includes/header.php';
 ?>
+<div class="auth-wrap">
+    <div class="auth-shell">
+        <aside class="auth-art" aria-hidden="true">
+            <h2>You are not alone</h2>
+            <p>Join a calm, supportive space built for parents and caregivers of autistic children.</p>
+            <ul><li><i class="fa-solid fa-heart"></i> Friendly community of parents</li><li><i class="fa-solid fa-chart-line"></i> Track behaviour &amp; progress</li><li><i class="fa-solid fa-list-check"></i> Predictable daily routines</li></ul>
+        </aside>
+    <div class="auth-card">
+        <img class="auth-logo" src="<?= e(asset('images/logo-mark.svg')) ?>" alt="">
+        <h1>Join <?= e(SITE_NAME) ?></h1>
+        <p class="sub">A calm space to connect, plan and track progress</p>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Sign Up</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: url('https://cdn.prod.website-files.com/65c243352de1c4e472fd29e5/65dbc234c7f8f6609147d3ac_1695575082593x234550197059517630-1708900781407x749810189931684500-dalle-895SX.png') no-repeat center center fixed; /* Replace with your image URL */
-            background-size: cover;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
+        <?php foreach ($errors as $er): ?><?= alert_html($er, 'danger') ?><?php endforeach; ?>
 
-        .signup {
-            background-color: rgba(255, 255, 255, 0.8);
-            padding: 30px 40px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        .signup form {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .signup input {
-            margin-bottom: 15px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-
-        .signup button {
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            background-color: #007bff;
-            color: #fff;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        .signup button:hover {
-            background-color: #0056b3;
-        }
-    </style>
-</head>
-<body>
-    <div class="signup">
-        <form action="signup.php" method="post">
-            <input type="text" name="username" placeholder="Username" required>
-            <input type="email" name="email" placeholder="Email" required>
-            <input type="password" name="password" placeholder="Password" required>
-            <button type="submit">Sign Up</button>
+        <form method="post" action="" novalidate>
+            <?= csrf_field() ?>
+            <div class="form-row">
+                <div class="form-group"><label for="first_name">First name</label>
+                    <input type="text" id="first_name" name="first_name" value="<?= e($v['first_name']) ?>" autocomplete="given-name"></div>
+                <div class="form-group"><label for="last_name">Last name</label>
+                    <input type="text" id="last_name" name="last_name" value="<?= e($v['last_name']) ?>" autocomplete="family-name"></div>
+            </div>
+            <div class="form-group"><label for="username">Username</label>
+                <div class="input-icon"><i class="fa-solid fa-at"></i>
+                    <input type="text" id="username" name="username" value="<?= e($v['username']) ?>" autocomplete="username" required></div></div>
+            <div class="form-group"><label for="email">Email</label>
+                <div class="input-icon"><i class="fa-solid fa-envelope"></i>
+                    <input type="email" id="email" name="email" value="<?= e($v['email']) ?>" autocomplete="email" required></div></div>
+            <div class="form-group"><label for="password">Password</label>
+                <div class="input-icon"><i class="fa-solid fa-lock"></i>
+                    <input type="password" id="password" name="password" minlength="8" autocomplete="new-password" required></div>
+                <div class="pw-meter"><span id="pwBar"></span></div>
+                <div class="form-hint">At least 8 characters.</div></div>
+            <div class="form-group"><label for="confirm">Confirm password</label>
+                <div class="input-icon"><i class="fa-solid fa-lock"></i>
+                    <input type="password" id="confirm" name="confirm" minlength="8" autocomplete="new-password" required></div></div>
+            <button class="btn btn-primary btn-block btn-lg" type="submit">Create account</button>
         </form>
+        <p class="text-center text-muted mt-3 mb-0">Already a member? <a href="<?= e(url('auth/login.php')) ?>">Log in</a></p>
     </div>
-</body>
-</html>
+    </div>
+</div>
+<script>
+(function () {
+    var pw = document.getElementById('password'), bar = document.getElementById('pwBar');
+    pw.addEventListener('input', function () {
+        var v = pw.value, s = 0;
+        if (v.length >= 8) s++; if (/[A-Z]/.test(v) && /[a-z]/.test(v)) s++; if (/\d/.test(v)) s++; if (/[^A-Za-z0-9]/.test(v) || v.length >= 14) s++;
+        bar.style.width = (s * 25) + '%';
+        bar.style.background = ['', 'var(--danger)', 'var(--warning)', 'var(--info)', 'var(--success)'][s] || '';
+    });
+})();
+</script>
+<?php include ROOT_PATH . '/includes/footer.php'; ?>

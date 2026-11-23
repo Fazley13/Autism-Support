@@ -1,6 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
 include_once '../../config/config.php';
+if (!isLoggedIn()) { redirect('auth/login.php'); }
 if (!isset($_SESSION['user_id'])) {
     echo "You must be logged in to provide feedback.";
     exit();
@@ -20,7 +21,7 @@ $stmt->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Provide Feedback</title>
+    <title>Provide feedback</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -138,7 +139,7 @@ $stmt->close();
 </head>
 <body>
     <div class="container">
-        <h1>Provide Feedback</h1>
+        <h1>Provide feedback</h1>
         <?php if ($result->num_rows > 0): ?>
             <form action="submit_therapy_feedback.php" method="POST">
                 <div class="form-group">
@@ -153,16 +154,16 @@ $stmt->close();
                 </div>
 
                 <div class="form-group">
-                    <label for="feedback_score">Feedback Score (1-5):</label>
+                    <label for="feedback_score">feedback Score (1-5):</label>
                     <input type="number" id="feedback_score" name="feedback_score" min="1" max="5" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="comments">Comments:</label>
+                    <label for="comments">comments:</label>
                     <textarea id="comments" name="comments" placeholder="Please share your thoughts about the session..."></textarea>
                 </div>
 
-                <button type="submit">Submit Feedback</button>
+                <button type="submit">Submit feedback</button>
             </form>
         <?php else: ?>
             <p>No therapy sessions available for feedback.</p>

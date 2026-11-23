@@ -1,216 +1,111 @@
 <?php
-// Include the database connection
-include_once '../../config/config.php';
+require_once __DIR__ . '/../../includes/bootstrap.php';
+require_once __DIR__ . '/../behavior/_lib.php';
+require_login();
 
-session_start();
+$uid = current_user_id();
+$errors = [];
+$edit = null;
 
-// Check if the user is logged in
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit();
-}
-
-$user_id = $_SESSION['user_id'];
-$message = "";
-
-// Handle form submission
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $behavior_type_id = $_POST['behavior_type_id']; // Assuming a dropdown for behavior types
-    $occurrence_time = $_POST['occurrence_time'];
-    $notes = $_POST['notes'];
-    $intensity = $_POST['intensity']; // Intensity (0-5)
-
-    // Insert behavior log into the database
-    $stmt = $conn->prepare("INSERT INTO behavioral_logs (user_id, behavior_type_id, occurrence_time, notes, intensity) VALUES (?, ?, ?, ?, ?)");
-    $stmt->bind_param("iissi", $user_id, $behavior_type_id, $occurrence_time, $notes, $intensity);
-
-    if ($stmt->execute()) {
-        $message = "Behavior logged successfully!";
-    } else {
-        $message = "Error: " . $stmt->error;
+if (is_post()) {
+    csrf_check();
+    $action = post_str('action');
+    if ($action === 'save') {
+        $id = post_int('log_id');
+        $type = post_int('behavior_type_id');
+        $when = str_replace('T', ' ', post_str('occurrence_time'));
+        $int = post_int('intensity', 0);
+        $notes = post_str('notes', 2000);
+        $dt = DateTime::createFromFormat('Y-m-d H:i', substr($when, 0, 16));
+        if (!db_one('SELECT 1 AS x FROM behavior_types WHERE id = ?', 'i', $type)) $errors[] = 'Please choose a behaviour type.';
+        if (!$dt) $errors[] = 'Please choose a valid date and time.';
+        if ($int < 0 || $int > 5) $errors[] = 'Intensity must be between 0 and 5.';
+        if (!$errors) {
+            if ($id) {
+                db_exec('UPDATE behavioral_logs SET behavior_type_id=?, occurrence_time=?, intensity=?, notes=? WHERE id=? AND user_id=?', 'isisii', $type, $dt->format('Y-m-d H:i:s'), $int, $notes, $id, $uid);
+                flash('Entry updated.');
+            } else {
+                db_exec('INSERT INTO behavioral_logs (user_id, behavior_type_id, occurrence_time, intensity, notes) VALUES (?,?,?,?,?)', 'iisis', $uid, $type, $dt->format('Y-m-d H:i:s'), $int, $notes);
+                flash('Behaviour logged. Thank you for tracking!');
+            }
+            redirect('modules/reports/behavioral_feature.php');
+        }
+        $edit = ['id' => $id, 'behavior_type_id' => $type, 'occurrence_time' => $when, 'intensity' => $int, 'notes' => $notes];
+    } elseif ($action === 'delete') {
+        db_exec('DELETE FROM behavioral_logs WHERE id = ? AND user_id = ?', 'ii', post_int('log_id'), $uid);
+        flash('Entry deleted.');
+        redirect('modules/reports/behavioral_feature.php');
     }
 }
+if (!$edit && ($eid = get_int('edit'))) {
+    $edit = db_one('SELECT * FROM behavioral_logs WHERE id = ? AND user_id = ?', 'ii', $eid, $uid);
+    if ($edit) $edit['occurrence_time'] = str_replace(' ', 'T', substr($edit['occurrence_time'], 0, 16));
+}
 
-// Query for summary table
-$summary_query = "
-    SELECT 
-        bt.type_name AS behavior_type,
-        COUNT(bl.id) AS behavior_count,
-        AVG(bl.intensity) AS average_intensity
-    FROM 
-        behavioral_logs AS bl
-    JOIN 
-        behavior_types AS bt ON bl.behavior_type_id = bt.id
-    WHERE 
-        bl.user_id = ? 
-        AND bl.occurrence_time >= DATE_SUB(NOW(), INTERVAL 30 DAY)
-    GROUP BY 
-        bl.behavior_type_id
-    ORDER BY 
-        behavior_count DESC;
-";
-$summary_stmt = $conn->prepare($summary_query);
-$summary_stmt->bind_param("i", $user_id);
-$summary_stmt->execute();
-$summary_result = $summary_stmt->get_result();
+$types = db_all('SELECT id, type_name FROM behavior_types ORDER BY type_name');
+$fType = get_int('type');
+$fFrom = DateTime::createFromFormat('Y-m-d', $_GET['from'] ?? '') ? $_GET['from'] : '';
+$fTo = DateTime::createFromFormat('Y-m-d', $_GET['to'] ?? '') ? $_GET['to'] : '';
+$sql = 'SELECT l.id, l.behavior_type_id, l.occurrence_time, l.notes, l.intensity, t.type_name FROM behavioral_logs l JOIN behavior_types t ON t.id = l.behavior_type_id WHERE l.user_id = ?';
+$ty = 'i'; $pa = [$uid];
+if ($fType) { $sql .= ' AND l.behavior_type_id = ?'; $ty .= 'i'; $pa[] = $fType; }
+if ($fFrom) { $sql .= ' AND l.occurrence_time >= ?'; $ty .= 's'; $pa[] = $fFrom . ' 00:00:00'; }
+if ($fTo)   { $sql .= ' AND l.occurrence_time <= ?'; $ty .= 's'; $pa[] = $fTo . ' 23:59:59'; }
+$logs = db_all($sql . ' ORDER BY l.occurrence_time DESC LIMIT 100', $ty, ...$pa);
 
-// Query for log details
-$details_query = "
-    SELECT 
-        bt.type_name AS behavior_type,
-        bl.occurrence_time,
-        bl.notes,
-        bl.intensity,
-        DATEDIFF(NOW(), bl.occurrence_time) AS days_ago
-    FROM 
-        behavioral_logs AS bl
-    JOIN 
-        behavior_types AS bt ON bl.behavior_type_id = bt.id
-    WHERE 
-        bl.user_id = ? 
-        AND bl.occurrence_time >= DATE_SUB(NOW(), INTERVAL 30 DAY);
-";
-$details_stmt = $conn->prepare($details_query);
-$details_stmt->bind_param("i", $user_id);
-$details_stmt->execute();
-$details_result = $details_stmt->get_result();
+$page_title = 'Behaviour tracking'; $active = 'behavior';
+$extra_js = ['assets/js/behavior.js'];
+include ROOT_PATH . '/includes/header.php';
+$cur = $edit['intensity'] ?? 2;
 ?>
+<div class="container">
+    <div class="page-header"><div><h1><i class="fa-solid fa-chart-line"></i> Behaviour tracking</h1><p>Record what happened, how strong it was, and what was going on around it.</p></div>
+        <?php if ($types): ?><button class="btn btn-primary" data-modal-open="#logModal" data-new data-modal-title="Log a behaviour"><i class="fa-solid fa-plus"></i> Log behaviour</button><?php endif; ?></div>
+    <?php behavior_nav('log'); ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Behavioral Log Feature</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        h1, h2 {
-            text-align: center;
-        }
-        .form-container {
-            max-width: 500px;
-            margin: 20px auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            background-color: #f9f9f9;
-        }
-        label, select, input, textarea, button {
-            width: 100%;
-            margin: 5px 0;
-            padding: 10px;
-        }
-        table {
-            width: 100%;
-            margin: 20px 0;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 10px;
-            border: 1px solid #ccc;
-            text-align: left;
-        }
-        th {
-            background-color: #f4f4f4;
-        }
-        .success-message {
-            text-align: center;
-            color: green;
-        }
-    </style>
-</head>
-<body>
-    <h1>Behavioral Log Feature</h1>
+    <?php if (!$types): ?><?= alert_html('No behaviour types exist yet. Add some first so you can start logging.', 'warning') ?>
+        <a class="btn btn-primary" href="<?= e(url('modules/behavior/behavior.php')) ?>">Add behaviour types</a><?php endif; ?>
 
-    <!-- Display success/error message -->
-    <?php if (!empty($message)) : ?>
-        <p class="success-message"><?= htmlspecialchars($message); ?></p>
-    <?php endif; ?>
+    <form class="card mb-2" method="get"><div class="form-row" style="align-items:end">
+        <div class="form-group mb-0"><label for="ftype">Behaviour</label><select id="ftype" name="type"><option value="">All</option><?php foreach ($types as $t): ?><option value="<?= (int) $t['id'] ?>"<?= $fType === (int) $t['id'] ? ' selected' : '' ?>><?= e($t['type_name']) ?></option><?php endforeach; ?></select></div>
+        <div class="form-group mb-0"><label for="ffrom">From</label><input type="date" id="ffrom" name="from" value="<?= e($fFrom) ?>"></div>
+        <div class="form-group mb-0"><label for="fto">To</label><input type="date" id="fto" name="to" value="<?= e($fTo) ?>"></div>
+        <div class="form-group mb-0 btn-group"><button class="btn btn-outline" type="submit"><i class="fa-solid fa-filter"></i> Filter</button><a class="btn btn-ghost" href="?">Reset</a></div>
+    </div></form>
 
-    <!-- Form to log behavior -->
-    <div class="form-container">
-        <form method="POST" action="">
-            <label for="behavior_type_id">Behavior Type:</label>
-            <select name="behavior_type_id" id="behavior_type_id" required>
-                <option value="">Select Behavior Type</option>
-                <?php
-                // Fetch behavior types dynamically
-                $type_query = "SELECT id, type_name FROM behavior_types";
-                $type_result = $conn->query($type_query);
-                while ($row = $type_result->fetch_assoc()) {
-                    echo "<option value='{$row['id']}'>" . htmlspecialchars($row['type_name']) . "</option>";
-                }
-                ?>
-            </select>
+    <div class="card">
+        <?php if (!$logs): ?>
+            <div class="empty-state"><i class="fa-regular fa-clipboard empty-icon"></i><h3>No entries yet</h3><p>Logging a few incidents a week is enough to start seeing helpful patterns.</p>
+                <?php if ($types): ?><button class="btn btn-primary" data-modal-open="#logModal" data-new data-modal-title="Log a behaviour">Log the first one</button><?php endif; ?></div>
+        <?php else: ?>
+        <div class="table-wrap"><table class="table"><thead><tr><th>When</th><th>Behaviour</th><th>Intensity</th><th>Notes</th><th></th></tr></thead><tbody>
+            <?php foreach ($logs as $l): ?>
+                <tr><td class="truncate"><?= e(date('M j, Y · g:i A', strtotime($l['occurrence_time']))) ?></td>
+                    <td><strong><?= e($l['type_name']) ?></strong></td><td><?= intensity_badge((int) $l['intensity']) ?></td>
+                    <td class="text-muted text-sm"><?= e(truncate((string) $l['notes'], 90)) ?></td>
+                    <td class="text-right" style="white-space:nowrap"><a class="btn btn-ghost btn-sm" href="?edit=<?= (int) $l['id'] ?>" aria-label="Edit" data-modal-open="#logModal" data-modal-title="Edit entry" data-fill='<?= e(json_encode(['log_id' => (int) $l['id'], 'behavior_type_id' => (int) $l['behavior_type_id'], 'occurrence_time' => str_replace(' ', 'T', substr($l['occurrence_time'], 0, 16)), 'intensity' => (int) $l['intensity'], 'notes' => $l['notes']], JSON_HEX_APOS)) ?>'><i class="fa-solid fa-pen"></i></a>
+                        <form method="post" style="display:inline" data-confirm="Delete this entry?"><?= csrf_field() ?><input type="hidden" name="action" value="delete"><input type="hidden" name="log_id" value="<?= (int) $l['id'] ?>"><button class="btn btn-ghost btn-sm" aria-label="Delete"><i class="fa-solid fa-trash"></i></button></form></td></tr>
+            <?php endforeach; ?></tbody></table></div>
+        <?php endif; ?>
+    </div>
+</div>
 
-            <label for="occurrence_time">Occurrence Time:</label>
-            <input type="datetime-local" name="occurrence_time" id="occurrence_time" required>
-
-            <label for="notes">Notes (optional):</label>
-            <textarea name="notes" id="notes" rows="4" placeholder="Details about the behavior"></textarea>
-
-            <label for="intensity">Intensity (0-5):</label>
-            <input type="number" name="intensity" id="intensity" min="0" max="5" required>
-
-            <button type="submit">Log Behavior</button>
+<div class="modal-backdrop<?= ($edit || $errors) ? ' open' : '' ?>" id="logModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="logTitle">
+        <div class="modal-header"><h3 id="logTitle"><?= !empty($edit['id']) ? 'Edit entry' : 'Log a behaviour' ?></h3><button class="btn btn-ghost btn-sm" data-modal-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
+        <?php foreach ($errors as $er): ?><?= alert_html($er, 'danger') ?><?php endforeach; ?>
+        <form method="post"><?= csrf_field() ?><input type="hidden" name="action" value="save"><input type="hidden" name="log_id" value="<?= (int) ($edit['id'] ?? 0) ?>">
+            <div class="form-row">
+                <div class="form-group"><label for="behavior_type_id">Behaviour</label><select id="behavior_type_id" name="behavior_type_id" required><option value="">Choose…</option>
+                    <?php foreach ($types as $t): ?><option value="<?= (int) $t['id'] ?>"<?= (int) ($edit['behavior_type_id'] ?? 0) === (int) $t['id'] ? ' selected' : '' ?>><?= e($t['type_name']) ?></option><?php endforeach; ?></select></div>
+                <div class="form-group"><label for="occurrence_time">When</label><input type="datetime-local" id="occurrence_time" name="occurrence_time" max="<?= date('Y-m-d\TH:i') ?>" value="<?= e($edit['occurrence_time'] ?? date('Y-m-d\TH:i')) ?>" required></div>
+            </div>
+            <div class="form-group"><label for="intensity">Intensity: <strong id="intLabel"></strong></label>
+                <input type="range" id="intensity" name="intensity" min="0" max="5" step="1" value="<?= (int) $cur ?>" data-labels='["None","Very mild","Mild","Moderate","Strong","Severe"]' data-label-target="#intLabel">
+                <div class="flex justify-between text-xs text-muted"><span>0 none</span><span>5 severe</span></div></div>
+            <div class="form-group"><label for="notes">What was happening? (triggers, place, what helped)</label><textarea id="notes" name="notes" maxlength="2000"><?= e($edit['notes'] ?? '') ?></textarea></div>
+            <div class="btn-group"><button class="btn btn-primary" type="submit">Save entry</button><button class="btn btn-outline" type="button" data-modal-close>Cancel</button></div>
         </form>
     </div>
-
-    <!-- Summary Table -->
-    <h2>Summary of Behaviors (Last 30 Days)</h2>
-    <?php if ($summary_result->num_rows > 0) : ?>
-        <table>
-            <thead>
-                <tr>
-                    <th>Behavior Type</th>
-                    <th>Count</th>
-                    <th>Average Intensity</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php while ($row = $summary_result->fetch_assoc()) : ?>
-                    <tr>
-                        <td><?= htmlspecialchars($row['behavior_type']); ?></td>
-                        <td><?= htmlspecialchars($row['behavior_count']); ?></td>
-                        <td><?= htmlspecialchars(number_format($row['average_intensity'], 1)); ?></td>
-                    </tr>
-                <?php endwhile; ?>
-            </tbody>
-        </table>
-    <?php else : ?>
-        <p style="text-align: center;">No behaviors logged in the last 30 days.</p>
-    <?php endif; ?>
-
-    <!-- Log Details Table -->
-    <h2>Log Details (Last 30 Days)</h2>
-    <?php if ($details_result->num_rows > 0) : ?>
-        <table>
-            <thead>
-                <tr>
-                    <th>Behavior Type</th>
-                    <th>Occurrence Time</th>
-                    <th>Notes</th>
-                    <th>Intensity</th>
-                    <th>Days Ago</th> <!-- Days Ago Column -->
-                </tr>
-            </thead>
-            <tbody>
-                <?php while ($row = $details_result->fetch_assoc()) : ?>
-                    <tr>
-                        <td><?= htmlspecialchars($row['behavior_type']); ?></td>
-                        <td><?= htmlspecialchars($row['occurrence_time']); ?></td>
-                        <td><?= htmlspecialchars($row['notes']); ?></td>
-                        <td><?= htmlspecialchars($row['intensity']); ?></td>
-                        <td><?= htmlspecialchars($row['days_ago']); ?> days ago</td>
-                    </tr>
-                <?php endwhile; ?>
-            </tbody>
-        </table>
-    <?php else : ?>
-        <p style="text-align: center;">No detailed logs available.</p>
-    <?php endif; ?>
-</body>
-</html>
+</div>
+<?php include ROOT_PATH . '/includes/footer.php'; ?>

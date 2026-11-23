@@ -61,11 +61,6 @@ CREATE TABLE `answers` (
 -- Dumping data for table `answers`
 --
 
-INSERT INTO `answers` (`answer_id`, `question_id`, `user_id`, `answer_text`, `created_at`) VALUES
-(1, 1, 5, ' it depends. It depends on the type of therapy and the therapy goals written specifically for your child. Most children with autism do receive therapy, but the type and length of time is highly variable.  ', '2025-01-23 16:38:00'),
-(5, 2, 3, 'Remembering to keep some activities simply for fun is important! This helps to give children (and parents) a break and prevent burnout, which is important because when children are fatigued they will often be more frustrated and less engaged when you are practicing new skills at home', '2025-01-23 17:07:01'),
-(6, 5, 3, 'Applied Behavior Analysis involves many techniques for understanding and changing behavior. ABA is a flexible treatment:  \r\n\r\nCan be adapted to meet the needs of each unique person\r\nProvided in many different locations – at home, at school, and in the community\r\nTeaches skills that are useful in everyday life\r\nCan involve one-to-one teaching or group instruction\r\n', '2025-01-27 06:51:06');
-
 -- --------------------------------------------------------
 
 --
@@ -85,17 +80,6 @@ CREATE TABLE `behavioral_logs` (
 --
 -- Dumping data for table `behavioral_logs`
 --
-
-INSERT INTO `behavioral_logs` (`id`, `user_id`, `behavior_type_id`, `occurrence_time`, `notes`, `created_at`, `intensity`) VALUES
-(39, 1, 1, '2025-01-18 22:43:00', '', '2025-01-18 16:44:08', 2),
-(40, 1, 3, '2025-01-09 22:44:00', '', '2025-01-18 16:44:24', 4),
-(41, 1, 1, '2025-01-04 22:44:00', '', '2025-01-18 16:44:41', 1),
-(42, 5, 3, '2025-01-07 11:50:00', '', '2025-01-27 05:50:38', 2),
-(43, 5, 3, '2025-01-15 11:50:00', '2', '2025-01-27 05:51:00', 2),
-(44, 5, 5, '2025-01-17 11:51:00', '', '2025-01-27 05:51:26', 3),
-(45, 5, 2, '2025-01-23 13:34:00', '', '2025-01-27 07:34:58', 5),
-(46, 5, 2, '2025-01-24 13:35:00', '', '2025-01-27 07:35:12', 3),
-(47, 5, 2, '2025-01-27 13:35:00', '', '2025-01-27 07:35:24', 4);
 
 -- --------------------------------------------------------
 
@@ -150,18 +134,6 @@ CREATE TABLE `comments` (
 -- Dumping data for table `comments`
 --
 
-INSERT INTO `comments` (`comment_id`, `post_id`, `user_id`, `comment`, `created_at`) VALUES
-(1, 4, 3, 'this is my first comment', '2025-01-04 19:21:35'),
-(2, 4, 3, 'And this one is my second.\n', '2025-01-04 20:31:38'),
-(4, 3, 3, 'the previous one is deleted.\n\n', '2025-01-04 20:32:17'),
-(7, 4, 3, 'this is a comment\n', '2025-01-05 07:28:20'),
-(9, 1, 3, 'haha 0 comment\n', '2025-01-06 16:53:11'),
-(12, 13, 4, 'nice picture', '2025-01-08 16:43:33'),
-(16, 24, 3, 'lets\'s do a comment\n', '2025-01-23 05:36:18'),
-(17, 29, 6, 'great understanding', '2025-01-27 07:13:12'),
-(18, 31, 4, 'god bless you', '2025-01-27 07:15:29'),
-(19, 31, 4, 'you can try counselling', '2025-01-27 07:19:18');
-
 -- --------------------------------------------------------
 
 --
@@ -182,14 +154,6 @@ CREATE TABLE `daily_planner` (
 --
 -- Dumping data for table `daily_planner`
 --
-
-INSERT INTO `daily_planner` (`task_id`, `user_id`, `title`, `description`, `priority`, `deadline`, `status`, `created_at`) VALUES
-(0, 3, 'rgf', 'fgfg', 'High', '2025-01-09', 'Completed', '2025-01-19 16:19:44'),
-(0, 3, 'rgf', 'fgfg', 'High', '2025-01-09', 'Completed', '2025-01-19 16:19:53'),
-(0, 3, 'rgf', 'fgfg', 'High', '2025-01-09', 'Completed', '2025-01-19 16:19:44'),
-(0, 3, 'rgf', 'fgfg', 'High', '2025-01-09', 'Completed', '2025-01-19 16:19:53'),
-(0, 5, 'playtime', 'play with friends', 'Medium', '2025-01-27', 'Pending', '2025-01-27 05:51:57'),
-(0, 5, 'shower', 'take a bath', 'High', '2025-01-28', 'Pending', '2025-01-27 06:21:44');
 
 -- --------------------------------------------------------
 
@@ -224,27 +188,6 @@ CREATE TABLE `events` (
 -- Dumping data for table `events`
 --
 
-INSERT INTO `events` (`title`, `description`, `location`, `category`, `date`, `accessibility_level`, `event_type`, `age_group`, `organizer_id`, `expert_id`, `attendees_count`, `start_time`, `end_time`, `event_mode`, `parental_guidance_required`, `resources_provided`, `status`, `event_id`, `notification_sent`, `name`) VALUES
-('Children\'s Webinar on Mental Health', 'A webinar focused on mental health strategies for children.', 'Online', 'Health', '2025-02-10', 'Medium', 'Webinar', '0-5', NULL, NULL, 150, '10:00:00', '12:00:00', 'Online', NULL, NULL, 'Upcoming', 8, 0, ''),
-('Autism Awareness Seminar', 'A seminar to raise awareness about autism and provide support to families.', 'Community Center', 'Awareness', '2025-03-15', 'High', 'Seminar', '6-10', NULL, NULL, 200, '14:00:00', '16:30:00', 'Offline', NULL, NULL, 'Upcoming', 9, 0, ''),
-('Parenting Tips Workshop', 'A hands-on workshop for parents to learn effective parenting strategies.', 'Community Hall', 'Education', '2025-04-20', 'Low', 'Workshop', '11-15', NULL, NULL, 50, '09:00:00', '12:00:00', 'Offline', NULL, NULL, 'Upcoming', 10, 0, ''),
-('Child Education Online Course', 'An online course for parents on the importance of early childhood education.', 'Online', 'Education', '2025-05-05', 'Medium', 'Webinar', '0-5', NULL, NULL, 100, '11:00:00', '13:00:00', 'Online', NULL, NULL, 'Upcoming', 11, 0, ''),
-('Health and Nutrition for Kids', 'A workshop for parents on providing proper health and nutrition for kids.', 'Online', 'Health', '2025-06-12', 'High', 'Workshop', '6-10', NULL, NULL, 80, '15:00:00', '17:00:00', 'Online', NULL, NULL, 'Upcoming', 12, 0, ''),
-('Autism Support Group Meeting', 'A support group meeting for parents of children with autism.', 'Local Community Center', 'Awareness', '2025-07-02', 'Low', 'Seminar', '11-15', NULL, NULL, 30, '18:00:00', '20:00:00', 'Offline', NULL, NULL, 'Upcoming', 13, 0, ''),
-('Mental Health for Parents Webinar', 'A webinar on coping strategies for parents of children with mental health challenges.', 'Online', 'Health', '2025-08-10', 'Medium', 'Webinar', '0-5', NULL, NULL, 120, '19:00:00', '21:00:00', 'Online', NULL, NULL, 'Upcoming', 14, 0, ''),
-('Parenting Tools for Early Childhood', 'A workshop offering tools and techniques for parents to manage early childhood development.', 'Offline', 'Education', '2025-09-18', 'High', 'Workshop', '0-5', NULL, NULL, 60, '10:00:00', '12:00:00', 'Offline', NULL, NULL, 'Upcoming', 15, 0, ''),
-('Autism Awareness Month Celebration', 'A community event to celebrate Autism Awareness Month with various activities and talks.', 'Local Park', 'Awareness', '2025-10-05', 'High', 'Seminar', '6-10', NULL, NULL, 500, '09:00:00', '15:00:00', 'Offline', NULL, NULL, 'Upcoming', 16, 0, ''),
-('Effective Communication with Kids Webinar', 'An interactive webinar on improving communication with children.', 'Online', 'Education', '2025-11-22', 'Medium', 'Webinar', '6-10', NULL, NULL, 200, '13:00:00', '15:00:00', 'Online', NULL, NULL, 'Completed', 17, 0, ''),
-('pitha uthshob', 'Arrange a pitha uthshob\r\n', 'DHANMONDI', 'Others', '2025-01-31', 'Medium', 'Workshop', '11-15', NULL, NULL, 0, '16:25:00', '22:30:00', 'Offline', NULL, NULL, NULL, 18, 0, ''),
-('pitha uthshob', 'arrange a pitha uthshob', 'Mohammadpur', 'Others', '2025-01-27', 'High', 'Workshop', '0-5', NULL, NULL, 0, '10:30:00', '22:30:00', 'Offline', NULL, NULL, NULL, 20, 0, ''),
-('kdhuwe', 'nfwh', 'nbdhs', 'Health', '2025-01-24', 'Low', 'Workshop', '0-5', NULL, NULL, 0, '20:56:00', '20:59:00', 'Online', NULL, NULL, NULL, 21, 0, ''),
-('ksjad', 'ajshdu', 'ash', 'Health', '2025-02-07', 'Low', 'Webinar', '6-10', NULL, NULL, 0, '22:19:00', '13:19:00', 'Online', NULL, NULL, NULL, 22, 0, ''),
-('ksjad', 'nb', 'jadah', 'Health', '2025-01-24', 'Low', 'Webinar', '6-10', NULL, 0, 0, '22:46:00', '22:49:00', 'Online', NULL, NULL, '', 23, 0, ''),
-('dbshf', 'hgwefy', 'mirpur', 'Health', '2025-01-24', 'High', 'Webinar', '6-10', NULL, NULL, 0, '23:17:00', '23:17:00', 'Offline', NULL, NULL, NULL, 26, 0, ''),
-('dbshf', 'hgwefy', 'mirpur', 'Health', '2025-01-24', 'High', 'Webinar', '6-10', NULL, NULL, 0, '23:17:00', '23:17:00', 'Offline', NULL, NULL, NULL, 27, 0, ''),
-('nebf', 'fbhe', 'Mohammadpur', 'Education', '2025-01-24', 'Low', 'Webinar', '0-5', NULL, NULL, 0, '23:23:00', '23:23:00', 'Online', NULL, NULL, NULL, 28, 0, ''),
-('pitha uthshob', 'ashgdyqwt', 'DHANMONDI', 'Others', '2025-01-31', 'Medium', 'Workshop', '11-15', NULL, NULL, 0, '14:37:00', '15:37:00', 'Offline', NULL, NULL, NULL, 30, 0, '');
-
 -- --------------------------------------------------------
 
 --
@@ -272,16 +215,6 @@ CREATE TABLE `event_participants` (
 --
 -- Dumping data for table `event_participants`
 --
-
-INSERT INTO `event_participants` (`event_participant_id`, `event_id`, `participant_id`, `status`) VALUES
-(2, 16, 5, 'Interested'),
-(3, 17, 3, 'Going'),
-(4, 16, 3, 'Going'),
-(5, 15, 3, 'Going'),
-(6, 16, 6, 'Going'),
-(7, 17, 6, 'Going'),
-(8, 15, 6, 'Going'),
-(9, 17, 5, 'Going');
 
 -- --------------------------------------------------------
 
@@ -325,11 +258,6 @@ CREATE TABLE `feedback` (
 -- Dumping data for table `feedback`
 --
 
-INSERT INTO `feedback` (`feedback_id`, `session_id`, `feedback_score`, `comments`, `created_at`) VALUES
-(1, 1, 2, 'he was so caring\r\n', '2025-01-18 18:00:01'),
-(2, 1, 3, 'improvised Social anxiety', '2025-01-19 05:43:02'),
-(3, 2, 1, 'cool', '2025-01-23 08:01:44');
-
 -- --------------------------------------------------------
 
 --
@@ -347,73 +275,6 @@ CREATE TABLE `followers` (
 -- Dumping data for table `followers`
 --
 
-INSERT INTO `followers` (`follower_id`, `user_id`, `follower_user_id`, `followed_at`) VALUES
-(1, 1, 2, '2025-01-04 18:06:25'),
-(2, 2, 1, '2025-01-04 18:06:25'),
-(10, NULL, 3, '2025-01-06 20:34:14'),
-(31, NULL, 3, '2025-01-08 01:51:38'),
-(32, NULL, 3, '2025-01-08 01:51:41'),
-(33, NULL, 3, '2025-01-08 01:51:42'),
-(34, NULL, 3, '2025-01-08 01:51:42'),
-(35, NULL, 3, '2025-01-08 01:51:43'),
-(36, NULL, 3, '2025-01-08 01:51:44'),
-(37, NULL, 3, '2025-01-08 01:51:44'),
-(38, NULL, 3, '2025-01-08 01:51:45'),
-(39, NULL, 3, '2025-01-08 01:51:45'),
-(40, NULL, 3, '2025-01-08 01:51:45'),
-(41, NULL, 3, '2025-01-08 01:51:45'),
-(42, NULL, 3, '2025-01-08 01:51:46'),
-(43, NULL, 3, '2025-01-08 01:51:47'),
-(44, NULL, 3, '2025-01-08 01:51:48'),
-(45, NULL, 3, '2025-01-08 01:53:36'),
-(46, NULL, 3, '2025-01-08 01:53:37'),
-(47, NULL, 3, '2025-01-08 01:53:57'),
-(48, NULL, 3, '2025-01-08 01:54:00'),
-(49, NULL, 3, '2025-01-08 01:54:01'),
-(50, NULL, 3, '2025-01-08 01:56:12'),
-(51, NULL, 3, '2025-01-08 01:56:13'),
-(52, NULL, 3, '2025-01-08 01:56:14'),
-(53, NULL, 3, '2025-01-08 01:56:14'),
-(54, NULL, 3, '2025-01-08 01:56:14'),
-(55, NULL, 3, '2025-01-08 01:56:15'),
-(56, NULL, 3, '2025-01-08 01:56:15'),
-(57, NULL, 3, '2025-01-08 01:56:15'),
-(58, NULL, 3, '2025-01-08 01:56:15'),
-(59, NULL, 3, '2025-01-08 01:56:15'),
-(60, NULL, 3, '2025-01-08 01:56:16'),
-(61, NULL, 3, '2025-01-08 01:56:16'),
-(62, NULL, 3, '2025-01-08 01:56:17'),
-(65, NULL, 3, '2025-01-08 13:07:26'),
-(66, NULL, 3, '2025-01-08 13:07:30'),
-(67, NULL, 3, '2025-01-08 13:07:31'),
-(68, NULL, 3, '2025-01-08 13:07:31'),
-(69, NULL, 3, '2025-01-08 13:07:31'),
-(93, 1, 3, '2025-01-08 20:07:52'),
-(94, NULL, 3, '2025-01-08 20:19:55'),
-(96, NULL, 3, '2025-01-08 20:45:44'),
-(97, NULL, 3, '2025-01-08 20:45:45'),
-(98, NULL, 3, '2025-01-08 20:56:46'),
-(99, NULL, 3, '2025-01-08 20:56:50'),
-(100, NULL, 3, '2025-01-08 20:57:40'),
-(101, NULL, 3, '2025-01-08 20:57:42'),
-(102, NULL, 3, '2025-01-09 10:31:45'),
-(103, NULL, 3, '2025-01-09 10:31:46'),
-(104, NULL, 3, '2025-01-09 10:31:50'),
-(105, NULL, 3, '2025-01-09 10:31:53'),
-(106, NULL, 3, '2025-01-09 10:31:54'),
-(107, NULL, 3, '2025-01-09 10:36:47'),
-(108, NULL, 3, '2025-01-09 10:36:49'),
-(109, NULL, 3, '2025-01-09 10:36:52'),
-(110, NULL, 3, '2025-01-09 10:43:30'),
-(111, NULL, 3, '2025-01-09 10:49:55'),
-(112, NULL, 3, '2025-01-09 10:49:57'),
-(113, NULL, 3, '2025-01-09 10:49:57'),
-(114, NULL, 3, '2025-01-09 10:49:59'),
-(136, 4, 3, '2025-01-23 05:35:51'),
-(137, 3, 6, '2025-01-27 07:12:53'),
-(138, 5, 6, '2025-01-27 07:12:55'),
-(139, 6, 4, '2025-01-27 07:19:28');
-
 -- --------------------------------------------------------
 
 --
@@ -430,42 +291,6 @@ CREATE TABLE `likes` (
 --
 -- Dumping data for table `likes`
 --
-
-INSERT INTO `likes` (`like_id`, `user_id`, `post_id`, `created_at`) VALUES
-(1, 1, 1, '2025-01-04 18:06:25'),
-(2, 2, 1, '2025-01-04 18:06:25'),
-(72, 3, NULL, '2025-01-06 20:26:32'),
-(73, 3, NULL, '2025-01-06 20:27:39'),
-(74, 3, NULL, '2025-01-06 20:28:09'),
-(75, 3, NULL, '2025-01-06 20:29:13'),
-(76, 3, NULL, '2025-01-06 20:32:33'),
-(77, 3, NULL, '2025-01-06 20:33:14'),
-(78, 3, 3, '2025-01-06 21:08:02'),
-(79, 3, NULL, '2025-01-07 14:52:18'),
-(80, 3, NULL, '2025-01-07 14:52:38'),
-(81, 3, NULL, '2025-01-07 14:55:06'),
-(82, 3, NULL, '2025-01-07 14:55:18'),
-(83, 3, NULL, '2025-01-07 14:57:32'),
-(84, 3, NULL, '2025-01-07 14:57:35'),
-(85, 3, NULL, '2025-01-07 16:38:02'),
-(86, 3, NULL, '2025-01-07 23:07:47'),
-(87, 3, NULL, '2025-01-07 23:07:47'),
-(88, 3, NULL, '2025-01-07 23:08:08'),
-(89, 3, NULL, '2025-01-07 23:15:45'),
-(90, 3, NULL, '2025-01-07 23:16:00'),
-(91, 3, NULL, '2025-01-07 23:16:33'),
-(94, 4, 10, '2025-01-08 14:51:08'),
-(103, 3, 17, '2025-01-09 12:07:55'),
-(104, 3, 4, '2025-01-12 05:41:56'),
-(105, 3, 1, '2025-01-12 05:42:01'),
-(106, 5, 28, '2025-01-27 06:38:08'),
-(107, 6, 29, '2025-01-27 07:12:57'),
-(108, 6, 30, '2025-01-27 07:12:58'),
-(109, 6, 28, '2025-01-27 07:13:17'),
-(110, 4, 3, '2025-01-27 07:15:03'),
-(111, 4, 30, '2025-01-27 07:15:08'),
-(113, 4, 28, '2025-01-27 07:15:15'),
-(114, 4, 32, '2025-01-27 07:18:46');
 
 -- --------------------------------------------------------
 
@@ -573,23 +398,6 @@ CREATE TABLE `post` (
 -- Dumping data for table `post`
 --
 
-INSERT INTO `post` (`post_id`, `user_id`, `content`, `privacy`, `category`, `created_at`, `photo`) VALUES
-(1, 1, 'First post about my experience', 'public', NULL, '2025-01-04 18:06:25', NULL),
-(2, 2, 'Private thoughts about parenting', 'private', NULL, '2025-01-04 18:06:25', NULL),
-(3, 3, 'this is a test post.by sr.', 'public', NULL, '2025-01-04 18:56:39', NULL),
-(4, 3, 'A post can be private which only its user and the follower can see.\r\n', 'public', NULL, '2025-01-04 19:17:33', NULL),
-(13, 4, 'a post is sharing from this profile\r\n', 'public', NULL, '2025-01-08 16:43:14', '2f6d0c1c4596404a4d97b1029b9e056d.jpg'),
-(18, 3, '', '', NULL, '2025-01-08 17:57:29', NULL),
-(19, 3, '', '', NULL, '2025-01-08 18:00:44', NULL),
-(23, 3, 'can this post be deleted?', 'public', 'general', '2025-01-12 05:42:23', NULL),
-(24, 3, 'a post is sharing from this profile', 'public', 'general', '2025-01-12 06:49:46', NULL),
-(26, 3, 'Bipolar disorder testing', 'public', 'Bipolar Disorder', '2025-01-23 05:59:33', NULL),
-(28, 5, 'autism child\r\n', 'public', 'general', '2025-01-27 06:38:03', 'OIP.jpg'),
-(29, 5, 'Managing bipolar disorder is a journey with its ups and downs. How do you maintain balance during mood swings? Let\'s discuss coping strategies and daily routines.', 'public', 'Bipolar Disorder', '2025-01-27 07:06:12', NULL),
-(30, 3, 'Anxiety can feel overwhelming, but small steps make a difference. What helps you or your child calm down during anxious moments?', 'public', 'anxiety', '2025-01-27 07:10:26', 'OIP (2).jpg'),
-(31, 6, 'Sometimes, depression feels isolating, but reaching out makes a difference. What resources or practices do you find most helpful for support?', 'public', 'depression', '2025-01-27 07:12:46', '6-28-2018-depression-in-teens-with-autism.jpg'),
-(32, 4, 'Schizophrenia requires a lot of understanding and care. What therapies or routines have made a positive impact in your life or your loved one’s?', 'public', 'Schizophrenia', '2025-01-27 07:17:00', 'schizophrenia-spectrum-and-types-5193053-FINAL-ff64839e31a64ca293f12f168d488302.jpg');
-
 -- --------------------------------------------------------
 
 --
@@ -617,11 +425,6 @@ CREATE TABLE `questions` (
 --
 -- Dumping data for table `questions`
 --
-
-INSERT INTO `questions` (`question_id`, `user_id`, `question_text`, `created_at`) VALUES
-(1, 3, 'How long will my child need therapy if they get diagnosed with autism spectrum disorder? ', '2025-01-23 16:27:51'),
-(2, 5, ' And what can I do at home starting today to help my child with their speech?', '2025-01-23 16:51:24'),
-(5, 3, ' What is ABA Therapy? ', '2025-01-24 16:17:46');
 
 -- --------------------------------------------------------
 
@@ -656,11 +459,6 @@ CREATE TABLE `resources` (
 -- Dumping data for table `resources`
 --
 
-INSERT INTO `resources` (`id`, `user_id`, `title`, `description`, `resource_type_id`, `created_at`) VALUES
-(2, 1, 'number learning', 'They can learn how to count', 2, '2025-01-19 01:18:21'),
-(3, 1, 'Social Skills Modules', 'Social interaction can be particularly challenging for individuals with autism. These modules aim to teach crucial social skills such as turn-taking, interpreting facial expressions, understanding social cues, and maintaining conversations. They often use role-playing, video modeling, and social stories to illustrate concepts', 2, '2025-01-19 01:47:13'),
-(13, 1, 'Life Skills Modules', 'These focus on developing practical skills necessary for daily living and independence. Topics may include personal hygiene, meal preparation, money management, and time management. These modules are crucial for promoting autonomy and quality of life', 1, '2025-01-19 05:07:33');
-
 -- --------------------------------------------------------
 
 --
@@ -677,11 +475,6 @@ CREATE TABLE `resource_details` (
 --
 -- Dumping data for table `resource_details`
 --
-
-INSERT INTO `resource_details` (`id`, `resource_id`, `file_path`, `external_link`) VALUES
-(1, 2, NULL, 'https://youtu.be/Ol_5o6_13ko?si=qRTSpDLj4I4VkPmr'),
-(2, 3, NULL, 'https://youtu.be/DEqhWMugltk?si=ZlHEkv7b3Txmq9Tm'),
-(12, 13, 'uploads/life skill module.txt', NULL);
 
 -- --------------------------------------------------------
 
@@ -732,362 +525,6 @@ CREATE TABLE `search` (
 -- Dumping data for table `search`
 --
 
-INSERT INTO `search` (`search_id`, `keywords`, `category`, `resource_type`, `resource_id`, `created_at`) VALUES
-(1, 'trying', 'all', NULL, NULL, '2025-01-06 19:54:29'),
-(2, 'pink floyd', 'all', NULL, NULL, '2025-01-06 19:54:50'),
-(3, 'pink floyd', 'all', NULL, NULL, '2025-01-06 19:54:53'),
-(4, 'pink floyd', 'all', NULL, NULL, '2025-01-06 19:54:57'),
-(5, 'pink floyd', 'all', NULL, NULL, '2025-01-06 19:55:03'),
-(6, 'pink floyd', 'all', NULL, NULL, '2025-01-06 19:55:06'),
-(7, 'trying', 'all', NULL, NULL, '2025-01-08 13:56:55'),
-(8, 'trying', 'all', NULL, NULL, '2025-01-08 18:53:30'),
-(9, 'trying', 'all', NULL, NULL, '2025-01-08 18:54:10'),
-(10, 'trying', 'all', NULL, NULL, '2025-01-08 18:54:12'),
-(11, 'here', 'all', NULL, NULL, '2025-01-08 18:54:26'),
-(12, 'sayem', 'all', NULL, NULL, '2025-01-09 12:21:59'),
-(13, 'sayem', 'all', NULL, NULL, '2025-01-09 12:22:17'),
-(14, 'sayem', 'all', NULL, NULL, '2025-01-09 12:22:18'),
-(15, 'sayem', 'all', NULL, NULL, '2025-01-09 12:22:19'),
-(16, 'trying', 'all', NULL, NULL, '2025-01-09 12:22:39'),
-(17, 'trying', 'all', NULL, NULL, '2025-01-09 12:22:54'),
-(18, 'trying', 'all', NULL, NULL, '2025-01-09 12:22:54'),
-(19, 'trying', 'all', NULL, NULL, '2025-01-09 12:22:55'),
-(20, 'trying', 'all', NULL, NULL, '2025-01-09 12:27:16'),
-(21, 'sayem', 'all', NULL, NULL, '2025-01-09 12:27:30'),
-(22, 'trying', 'all', NULL, NULL, '2025-01-09 12:32:59'),
-(23, 'trying', 'all', NULL, NULL, '2025-01-09 12:33:55'),
-(24, 'trying', 'all', NULL, NULL, '2025-01-09 12:33:57'),
-(25, 'trying', 'all', NULL, NULL, '2025-01-09 12:33:58'),
-(26, 'here', 'all', NULL, NULL, '2025-01-09 12:34:11'),
-(27, 'here', 'all', NULL, NULL, '2025-01-09 12:37:37'),
-(28, 'here', 'all', NULL, NULL, '2025-01-09 12:38:40'),
-(29, 'here', 'all', NULL, NULL, '2025-01-09 12:38:42'),
-(30, 'here', 'all', NULL, NULL, '2025-01-09 12:38:43'),
-(31, 'sayem', 'all', NULL, NULL, '2025-01-09 12:38:51'),
-(32, 'sayem', 'all', NULL, NULL, '2025-01-09 12:40:51'),
-(33, 'sayem', 'all', NULL, NULL, '2025-01-09 12:42:46'),
-(34, 'sayem', 'all', NULL, NULL, '2025-01-09 12:42:48'),
-(35, 'sayem', 'all', NULL, NULL, '2025-01-09 12:43:31'),
-(36, 'sayem', 'all', NULL, NULL, '2025-01-09 12:43:35'),
-(37, 'sayem', 'all', NULL, NULL, '2025-01-09 12:43:36'),
-(38, 'sayem', 'all', NULL, NULL, '2025-01-09 12:43:38'),
-(39, 'this', 'all', NULL, NULL, '2025-01-09 12:43:49'),
-(40, 'this', 'all', NULL, NULL, '2025-01-09 12:46:37'),
-(41, 'this', 'all', NULL, NULL, '2025-01-09 12:46:58'),
-(42, 'this', 'all', NULL, NULL, '2025-01-09 12:47:00'),
-(43, 'this', 'all', NULL, NULL, '2025-01-09 12:47:01'),
-(44, 'sayem', 'all', NULL, NULL, '2025-01-09 12:47:11'),
-(45, 'sayem', 'all', NULL, NULL, '2025-01-09 12:47:20'),
-(46, 'sayem', 'all', NULL, NULL, '2025-01-09 12:47:35'),
-(47, 'sayem', 'all', NULL, NULL, '2025-01-09 12:47:45'),
-(48, 'sayem', 'specific', NULL, NULL, '2025-01-09 12:47:50'),
-(49, 'sayem', 'all', NULL, NULL, '2025-01-09 12:51:13'),
-(50, 'sayem', 'all', NULL, NULL, '2025-01-09 12:51:20'),
-(51, 'sayem', 'all', NULL, NULL, '2025-01-09 12:51:27'),
-(52, 'sayem', 'general', NULL, NULL, '2025-01-09 12:51:32'),
-(53, 'sayem', 'general', NULL, NULL, '2025-01-09 12:52:39'),
-(54, 'sayem', 'general', NULL, NULL, '2025-01-09 12:52:40'),
-(55, 'sayem', 'general', NULL, NULL, '2025-01-09 12:52:50'),
-(56, 'sayem', 'general', NULL, NULL, '2025-01-09 12:52:54'),
-(57, 'sayem', 'general', NULL, NULL, '2025-01-09 13:02:12'),
-(58, 'sayem', 'general', NULL, NULL, '2025-01-09 13:02:13'),
-(59, 'sayem', 'general', NULL, NULL, '2025-01-09 13:02:16'),
-(60, 'sayem', 'general', NULL, NULL, '2025-01-09 13:02:18'),
-(61, 'sayem', 'all', NULL, NULL, '2025-01-09 13:02:26'),
-(62, 'sayem', 'all', NULL, NULL, '2025-01-09 13:02:28'),
-(63, 'sayem', 'all', NULL, NULL, '2025-01-09 13:02:29'),
-(64, 'sayem', 'all', NULL, NULL, '2025-01-09 13:05:19'),
-(65, 'sayem', 'all', NULL, NULL, '2025-01-09 13:05:22'),
-(66, 'sayem', 'all', NULL, NULL, '2025-01-09 13:05:25'),
-(67, 'sayem', 'all', NULL, NULL, '2025-01-09 13:05:26'),
-(68, 'sayem', 'all', NULL, NULL, '2025-01-09 13:05:28'),
-(69, 'sayem', 'all', NULL, NULL, '2025-01-09 13:05:34'),
-(70, 'sayem', 'all', NULL, NULL, '2025-01-09 13:05:37'),
-(71, 'sayem', 'all', NULL, NULL, '2025-01-09 13:05:39'),
-(72, 'sayem', 'general', NULL, NULL, '2025-01-09 13:05:46'),
-(73, 'sayem', 'general', NULL, NULL, '2025-01-09 13:05:50'),
-(74, 'sayem', 'general', NULL, NULL, '2025-01-09 13:05:55'),
-(75, 'this', 'all', NULL, NULL, '2025-01-09 13:06:19'),
-(76, 'this', 'all', NULL, NULL, '2025-01-09 13:06:24'),
-(77, 'this', 'all', NULL, NULL, '2025-01-09 13:06:39'),
-(78, 'this', 'all', NULL, NULL, '2025-01-09 13:06:44'),
-(79, 'this', 'all', NULL, NULL, '2025-01-09 13:06:46'),
-(80, 'this', 'all', NULL, NULL, '2025-01-09 13:06:47'),
-(81, 'this', 'all', NULL, NULL, '2025-01-09 13:06:49'),
-(82, 'pink floyd', 'all', NULL, NULL, '2025-01-09 13:07:28'),
-(83, 'this', 'all', NULL, NULL, '2025-01-09 13:08:01'),
-(84, 'this', 'all', NULL, NULL, '2025-01-09 13:08:04'),
-(85, 'this', 'all', NULL, NULL, '2025-01-09 13:08:07'),
-(86, 'this', 'all', NULL, NULL, '2025-01-09 13:08:08'),
-(87, 'this', 'all', NULL, NULL, '2025-01-09 13:08:13'),
-(88, 'this', 'all', NULL, NULL, '2025-01-09 13:08:17'),
-(89, 'this', 'all', NULL, NULL, '2025-01-09 13:08:21'),
-(90, 'this', 'all', NULL, NULL, '2025-01-09 13:08:26'),
-(91, 'this', 'specific', NULL, NULL, '2025-01-09 13:08:48'),
-(92, 'trying', 'all', NULL, NULL, '2025-01-09 13:26:26'),
-(93, 'trying', 'all', NULL, NULL, '2025-01-09 13:26:41'),
-(94, 'trying', 'all', NULL, NULL, '2025-01-09 13:26:42'),
-(95, 'general', 'all', NULL, NULL, '2025-01-09 13:26:52'),
-(96, 'can this', 'all', NULL, NULL, '2025-01-12 05:42:28'),
-(97, 'can this', 'all', NULL, NULL, '2025-01-12 05:42:31'),
-(98, 'can this', 'all', NULL, NULL, '2025-01-12 05:42:35'),
-(99, 'can this', 'all', NULL, NULL, '2025-01-12 05:42:36'),
-(100, 'can this', 'all', NULL, NULL, '2025-01-12 05:42:42'),
-(101, 'can this', 'all', NULL, NULL, '2025-01-12 05:42:48'),
-(102, 'trying', 'all', NULL, NULL, '2025-01-12 06:22:57'),
-(103, 'trying', 'all', NULL, NULL, '2025-01-12 06:23:01'),
-(104, 'trying', 'all', NULL, NULL, '2025-01-12 06:23:03'),
-(105, 'trying', 'all', NULL, NULL, '2025-01-12 06:46:04'),
-(106, 'can', 'all', NULL, NULL, '2025-01-12 06:46:34'),
-(107, 'can', 'all', NULL, NULL, '2025-01-12 06:48:30'),
-(108, 'can', 'all', NULL, NULL, '2025-01-12 06:48:39'),
-(109, 'can', 'all', NULL, NULL, '2025-01-12 06:48:41'),
-(110, 'can', 'all', NULL, NULL, '2025-01-12 06:48:47'),
-(111, 'can', 'all', NULL, NULL, '2025-01-12 06:48:52'),
-(112, 'can', 'all', NULL, NULL, '2025-01-12 06:48:58'),
-(113, 'can', 'all', NULL, NULL, '2025-01-12 06:49:03'),
-(114, 'can', 'all', NULL, NULL, '2025-01-12 06:49:09'),
-(115, 'a post is', 'all', NULL, NULL, '2025-01-12 06:49:51'),
-(116, 'a post is', 'all', NULL, NULL, '2025-01-12 06:49:56'),
-(117, 'a post is', 'general', NULL, NULL, '2025-01-12 06:50:01'),
-(118, 'a post is', 'general', NULL, NULL, '2025-01-12 06:50:11'),
-(119, 'a post is', 'all', NULL, NULL, '2025-01-12 06:53:38'),
-(120, 'a post is', 'all', NULL, NULL, '2025-01-12 06:54:21'),
-(121, 'a post is', 'all', NULL, NULL, '2025-01-12 06:54:41'),
-(122, 'a post is', 'all', NULL, NULL, '2025-01-12 06:54:52'),
-(123, 'a post is', 'all', NULL, NULL, '2025-01-12 06:55:01'),
-(124, 'a post is', 'all', NULL, NULL, '2025-01-12 06:55:30'),
-(125, 'a post is', 'all', NULL, NULL, '2025-01-12 06:55:54'),
-(126, 'a post is', 'all', NULL, NULL, '2025-01-12 06:58:36'),
-(127, 'a post is', 'all', NULL, NULL, '2025-01-12 06:58:42'),
-(128, 'a post is', 'all', NULL, NULL, '2025-01-12 06:58:50'),
-(129, 'a post is', 'all', NULL, NULL, '2025-01-12 06:59:01'),
-(130, 'a post is', 'all', NULL, NULL, '2025-01-12 06:59:02'),
-(131, 'a post is', 'all', NULL, NULL, '2025-01-12 06:59:10'),
-(132, 'a post is', 'all', NULL, NULL, '2025-01-12 06:59:23'),
-(133, 'a post is', 'general', NULL, NULL, '2025-01-12 06:59:34'),
-(134, 'a post is', 'all', NULL, NULL, '2025-01-12 07:02:10'),
-(135, 'a post is', 'all', NULL, NULL, '2025-01-12 07:02:15'),
-(136, 'a post is', 'all', NULL, NULL, '2025-01-12 07:02:18'),
-(137, 'a post', 'all', NULL, NULL, '2025-01-12 07:02:39'),
-(138, 'a post', 'all', NULL, NULL, '2025-01-12 07:10:12'),
-(139, 'a post', 'all', NULL, NULL, '2025-01-12 07:10:20'),
-(140, 'a post', 'all', NULL, NULL, '2025-01-12 07:10:21'),
-(141, 'a post', 'all', NULL, NULL, '2025-01-12 07:10:25'),
-(142, 'a post', 'all', NULL, NULL, '2025-01-12 07:10:29'),
-(143, 'a post', 'all', NULL, NULL, '2025-01-12 07:10:36'),
-(144, 'a post', 'all', NULL, NULL, '2025-01-12 07:10:41'),
-(145, 'a post', 'all', NULL, NULL, '2025-01-12 07:10:55'),
-(146, 'a post', 'all', NULL, NULL, '2025-01-12 07:11:02'),
-(147, 'a post', 'all', NULL, NULL, '2025-01-12 07:11:18'),
-(148, 'a post', 'all', NULL, NULL, '2025-01-12 07:15:49'),
-(149, 'a post', 'all', NULL, NULL, '2025-01-12 07:16:07'),
-(150, 'a post', 'all', NULL, NULL, '2025-01-12 07:16:10'),
-(151, 'a post', 'all', NULL, NULL, '2025-01-12 07:16:14'),
-(152, 'a post', 'all', NULL, NULL, '2025-01-12 07:16:17'),
-(153, 'a post', 'all', NULL, NULL, '2025-01-12 07:16:21'),
-(154, 'a post', 'general', NULL, NULL, '2025-01-12 07:16:26'),
-(155, 'a post', 'general', NULL, NULL, '2025-01-12 07:16:34'),
-(156, 'a post', 'all', NULL, NULL, '2025-01-12 07:16:39'),
-(157, 'a post', 'all', NULL, NULL, '2025-01-12 07:16:43'),
-(158, 'a post', 'all', NULL, NULL, '2025-01-12 07:16:48'),
-(159, 'a post', 'all', NULL, NULL, '2025-01-12 07:16:59'),
-(160, 'a post', 'all', NULL, NULL, '2025-01-12 07:36:22'),
-(161, 'trying', 'all', NULL, NULL, '2025-01-18 15:51:59'),
-(162, 'trying', 'all', NULL, NULL, '2025-01-18 16:14:50'),
-(163, 'trying', 'all', NULL, NULL, '2025-01-18 16:42:21'),
-(164, 'trying', 'all', NULL, NULL, '2025-01-18 16:46:51'),
-(165, 'a post', 'all', NULL, NULL, '2025-01-19 05:29:09'),
-(166, 'a post', 'all', NULL, NULL, '2025-01-19 05:29:47'),
-(167, 'a post', 'all', NULL, NULL, '2025-01-19 05:29:49'),
-(168, 'a post', 'all', NULL, NULL, '2025-01-19 05:29:51'),
-(169, 'trying', 'all', NULL, NULL, '2025-01-23 05:43:44'),
-(170, 'this', 'all', NULL, NULL, '2025-01-23 05:49:56'),
-(171, 'this', 'all', NULL, NULL, '2025-01-23 05:56:42'),
-(172, 'this', 'all', NULL, NULL, '2025-01-23 05:56:44'),
-(173, 'this', 'all', NULL, NULL, '2025-01-23 05:56:45'),
-(174, 'this', 'all', NULL, NULL, '2025-01-23 05:57:50'),
-(175, 'this', 'all', NULL, NULL, '2025-01-23 05:57:53'),
-(176, 'this', 'all', NULL, NULL, '2025-01-23 05:57:55'),
-(177, 'this', 'all', NULL, NULL, '2025-01-23 05:57:57'),
-(178, 'this', 'all', NULL, NULL, '2025-01-23 05:57:58'),
-(179, 'this', 'all', NULL, NULL, '2025-01-23 05:58:04'),
-(180, 'this', 'all', NULL, NULL, '2025-01-23 05:58:10'),
-(181, 'this', 'all', NULL, NULL, '2025-01-23 05:58:18'),
-(182, 'this', 'all', NULL, NULL, '2025-01-23 05:58:23'),
-(183, 'this', 'all', NULL, NULL, '2025-01-23 05:58:27'),
-(184, 'this', 'all', NULL, NULL, '2025-01-23 05:58:30'),
-(185, 'this', 'all', NULL, NULL, '2025-01-23 05:58:40'),
-(186, 'bipolar', 'all', NULL, NULL, '2025-01-23 05:59:41'),
-(187, 'bipolar', 'all', NULL, NULL, '2025-01-23 05:59:48'),
-(188, 's', 'all', NULL, NULL, '2025-01-23 06:00:17'),
-(189, 'this', 'all', NULL, NULL, '2025-01-23 06:33:48'),
-(190, 'this', 'all', NULL, NULL, '2025-01-23 06:34:08'),
-(191, 'this', 'all', NULL, NULL, '2025-01-23 06:34:14'),
-(192, 'this', 'all', NULL, NULL, '2025-01-23 06:34:45'),
-(193, 'this', 'general', NULL, NULL, '2025-01-23 06:34:48'),
-(194, 'this', 'ADHD', NULL, NULL, '2025-01-23 06:35:13'),
-(195, 'this', 'Bipolar Disorder', NULL, NULL, '2025-01-23 06:35:18'),
-(196, 'this', 'Bipolar Disorder', NULL, NULL, '2025-01-23 06:38:37'),
-(197, 'this', 'general', NULL, NULL, '2025-01-23 06:38:45'),
-(198, 'this', 'general', NULL, NULL, '2025-01-23 06:40:00'),
-(199, 'this', 'all', NULL, NULL, '2025-01-23 06:40:03'),
-(200, 'this', 'all', NULL, NULL, '2025-01-23 06:40:05'),
-(201, 'this', 'all', NULL, NULL, '2025-01-23 06:40:09'),
-(202, 'this', 'all', NULL, NULL, '2025-01-23 06:40:13'),
-(203, 'this', 'all', NULL, NULL, '2025-01-23 06:42:08'),
-(204, 'this', 'all', NULL, NULL, '2025-01-23 06:43:13'),
-(205, 'this', 'Bipolar Disorder', NULL, NULL, '2025-01-23 06:43:16'),
-(206, 'this', 'Bipolar Disorder', NULL, NULL, '2025-01-23 06:47:10'),
-(207, 'this', 'all', NULL, NULL, '2025-01-23 06:47:15'),
-(208, 'this', 'all', NULL, NULL, '2025-01-23 06:47:19'),
-(209, 'this', 'all', NULL, NULL, '2025-01-23 06:49:02'),
-(210, 'bipolar', 'all', NULL, NULL, '2025-01-23 06:49:10'),
-(211, 'bipolar', 'all', NULL, NULL, '2025-01-23 06:50:38'),
-(212, 'bipolar', 'all', NULL, NULL, '2025-01-23 06:50:38'),
-(213, 'bipolar', 'all', NULL, NULL, '2025-01-23 06:50:43'),
-(214, 'bipolar', 'all', NULL, NULL, '2025-01-23 06:50:45'),
-(215, 'bipolar', 'all', NULL, NULL, '2025-01-23 06:51:03'),
-(216, 'bipolar', 'all', NULL, NULL, '2025-01-23 06:51:09'),
-(217, 'bipolar', 'all', NULL, NULL, '2025-01-23 06:51:10'),
-(218, 'bipolar', 'all', NULL, NULL, '2025-01-23 06:51:12'),
-(219, 'bipolar', 'epilepsy', NULL, NULL, '2025-01-23 06:51:14'),
-(220, 'bipolar', 'general', NULL, NULL, '2025-01-23 06:51:22'),
-(221, 'bipolar', 'general', NULL, NULL, '2025-01-23 06:51:25'),
-(222, 'bipolar', 'all', NULL, NULL, '2025-01-23 07:06:14'),
-(223, 'bipolar', 'Bipolar Disorder', NULL, NULL, '2025-01-23 07:06:16'),
-(224, 'bipolar', 'Bipolar Disorder', NULL, NULL, '2025-01-23 07:07:30'),
-(225, 'bipolar', 'Bipolar Disorder', NULL, NULL, '2025-01-23 07:07:31'),
-(226, 'bipolar', 'all', NULL, NULL, '2025-01-23 07:07:38'),
-(227, 'bipolar', 'all', NULL, NULL, '2025-01-23 07:08:30'),
-(228, 'bipolar', 'all', NULL, NULL, '2025-01-23 07:08:31'),
-(229, 'bipolar', 'all', NULL, NULL, '2025-01-23 07:08:35'),
-(230, 'bipolar', 'all', NULL, NULL, '2025-01-23 07:08:59'),
-(231, 'bipolar', 'all', NULL, NULL, '2025-01-23 07:10:36'),
-(232, 'bipolar', 'Bipolar Disorder', NULL, NULL, '2025-01-23 07:10:40'),
-(233, 'bipolar', 'sleep', NULL, NULL, '2025-01-23 07:10:42'),
-(234, 'bipolar', 'sleep', NULL, NULL, '2025-01-23 07:10:44'),
-(235, 'bipolar', 'sleep', NULL, NULL, '2025-01-23 07:10:46'),
-(236, 'bipolar', 'general', NULL, NULL, '2025-01-23 07:10:48'),
-(237, 'bipolar', 'general', NULL, NULL, '2025-01-23 07:10:49'),
-(238, 'bipolar', 'Bipolar Disorder', NULL, NULL, '2025-01-23 07:10:53'),
-(239, 'bipolar', 'Bipolar Disorder', NULL, NULL, '2025-01-23 07:10:55'),
-(240, 'bipolar', 'Bipolar Disorder', NULL, NULL, '2025-01-23 07:10:56'),
-(241, 'bipolar', 'Bipolar Disorder', NULL, NULL, '2025-01-23 07:10:58'),
-(242, 'bipolar', 'Bipolar Disorder', NULL, NULL, '2025-01-23 07:10:59'),
-(243, 'this', 'all', NULL, NULL, '2025-01-23 07:11:17'),
-(244, 'this', 'all', NULL, NULL, '2025-01-23 07:11:50'),
-(245, 'this', 'all', NULL, NULL, '2025-01-23 07:11:51'),
-(246, 'this', 'all', NULL, NULL, '2025-01-23 07:11:55'),
-(247, 'this', 'all', NULL, NULL, '2025-01-23 07:12:11'),
-(248, 'this', 'all', NULL, NULL, '2025-01-23 07:12:54'),
-(249, 'this', 'all', NULL, NULL, '2025-01-23 07:13:00'),
-(250, 'this', 'all', NULL, NULL, '2025-01-23 07:13:02'),
-(251, 'this', 'all', NULL, NULL, '2025-01-23 07:13:49'),
-(252, 'this', 'all', NULL, NULL, '2025-01-23 07:14:04'),
-(253, 'this', 'all', NULL, NULL, '2025-01-23 07:14:24'),
-(254, 'this', 'all', NULL, NULL, '2025-01-23 07:14:39'),
-(255, 'this', 'all', NULL, NULL, '2025-01-23 07:14:58'),
-(256, 'this', 'all', NULL, NULL, '2025-01-23 07:15:12'),
-(257, 'this', 'all', NULL, NULL, '2025-01-23 07:15:24'),
-(258, 'this', 'all', NULL, NULL, '2025-01-23 07:16:59'),
-(259, 'this', 'all', NULL, NULL, '2025-01-23 07:20:01'),
-(260, 'this', 'all', NULL, NULL, '2025-01-23 07:21:40'),
-(261, 'this', 'all', NULL, NULL, '2025-01-23 07:23:41'),
-(262, 'this', 'all', NULL, NULL, '2025-01-23 07:26:19'),
-(263, 'this', 'all', NULL, NULL, '2025-01-23 07:26:22'),
-(264, 'this', 'all', NULL, NULL, '2025-01-23 07:26:28'),
-(265, 'this', 'all', NULL, NULL, '2025-01-23 07:26:30'),
-(266, 'this', 'all', NULL, NULL, '2025-01-23 07:28:30'),
-(267, 'this', 'all', NULL, NULL, '2025-01-23 07:28:38'),
-(268, 'this', 'all', NULL, NULL, '2025-01-23 07:28:42'),
-(269, 'this', 'Bipolar Disorder', NULL, NULL, '2025-01-23 07:28:45'),
-(270, 'this', 'general', NULL, NULL, '2025-01-23 07:28:53'),
-(271, 'this', 'general', NULL, NULL, '2025-01-23 07:28:55'),
-(272, 'this', 'general', NULL, NULL, '2025-01-23 07:28:58'),
-(273, 'this', 'general', NULL, NULL, '2025-01-23 07:29:02'),
-(274, 'this', 'general', NULL, NULL, '2025-01-23 07:29:05'),
-(275, 'this', 'general', NULL, NULL, '2025-01-23 07:30:53'),
-(276, 'this', 'general', NULL, NULL, '2025-01-23 07:30:54'),
-(277, 'this', 'general', NULL, NULL, '2025-01-23 07:30:58'),
-(278, 'this', 'general', NULL, NULL, '2025-01-23 07:30:59'),
-(279, 'this', 'Bipolar Disorder', NULL, NULL, '2025-01-23 07:31:02'),
-(280, 'this', 'epilepsy', NULL, NULL, '2025-01-23 07:31:10'),
-(281, 'this', 'general', NULL, NULL, '2025-01-23 07:31:11'),
-(282, 'this', 'general', NULL, NULL, '2025-01-23 07:31:38'),
-(283, 'this', 'Bipolar Disorder', NULL, NULL, '2025-01-23 07:31:42'),
-(284, 'this', 'Bipolar Disorder', NULL, NULL, '2025-01-23 07:31:44'),
-(285, 'this', 'Bipolar Disorder', NULL, NULL, '2025-01-23 07:31:52'),
-(286, 'this', 'general', NULL, NULL, '2025-01-23 07:31:55'),
-(287, 'this', 'general', NULL, NULL, '2025-01-23 07:34:28'),
-(288, 'this', 'general', NULL, NULL, '2025-01-23 07:35:13'),
-(289, 'this', 'general', NULL, NULL, '2025-01-23 07:35:14'),
-(290, 'this', 'general', NULL, NULL, '2025-01-23 07:35:24'),
-(291, 'this', 'general', NULL, NULL, '2025-01-23 07:36:08'),
-(292, 'this', 'general', NULL, NULL, '2025-01-23 07:38:47'),
-(293, 'this', 'general', NULL, NULL, '2025-01-23 07:38:48'),
-(294, 'this', 'general', NULL, NULL, '2025-01-23 07:38:49'),
-(295, 'this', 'general', NULL, NULL, '2025-01-23 07:38:50'),
-(296, 'bipolar', 'all', NULL, NULL, '2025-01-23 07:39:43'),
-(297, 'search', 'all', NULL, NULL, '2025-01-23 07:39:51'),
-(298, 'search', 'all', NULL, NULL, '2025-01-23 07:42:23'),
-(299, 'this', 'all', NULL, NULL, '2025-01-23 07:42:28'),
-(300, 'this', 'all', NULL, NULL, '2025-01-23 07:49:45'),
-(301, 'this', 'all', NULL, NULL, '2025-01-23 07:49:51'),
-(302, 'this', 'all', NULL, NULL, '2025-01-23 07:52:02'),
-(303, 'this', 'all', NULL, NULL, '2025-01-23 07:52:18'),
-(304, 'this', 'all', NULL, NULL, '2025-01-23 07:53:02'),
-(305, 'this', 'all', NULL, NULL, '2025-01-23 07:53:19'),
-(306, 'this', 'all', NULL, NULL, '2025-01-23 07:53:20'),
-(307, 'this', 'all', NULL, NULL, '2025-01-23 07:55:13'),
-(308, 'this', 'all', NULL, NULL, '2025-01-23 07:55:37'),
-(309, 'this', 'all', NULL, NULL, '2025-01-23 07:55:39'),
-(310, 'this', 'all', NULL, NULL, '2025-01-23 07:55:40'),
-(311, 'this', 'all', NULL, NULL, '2025-01-23 07:55:41'),
-(312, 'this', 'all', NULL, NULL, '2025-01-23 07:55:43'),
-(313, 'this', 'Bipolar Disorder', NULL, NULL, '2025-01-23 07:55:44'),
-(314, 'this', 'Bipolar Disorder', NULL, NULL, '2025-01-23 07:55:47'),
-(315, 'this', 'Bipolar Disorder', NULL, NULL, '2025-01-23 07:55:48'),
-(316, 'this', 'Bipolar Disorder', NULL, NULL, '2025-01-23 07:55:49'),
-(317, 'this', 'general', NULL, NULL, '2025-01-23 07:55:51'),
-(318, 'this', 'general', NULL, NULL, '2025-01-23 07:56:34'),
-(319, 'this', 'general', NULL, NULL, '2025-01-23 07:56:43'),
-(320, 'this', 'general', NULL, NULL, '2025-01-23 07:56:45'),
-(321, 'this', 'general', NULL, NULL, '2025-01-23 07:56:46'),
-(322, 'this', 'general', NULL, NULL, '2025-01-23 07:56:54'),
-(323, 'this', 'general', NULL, NULL, '2025-01-23 07:56:55'),
-(324, 'this', 'all', NULL, NULL, '2025-01-23 07:57:04'),
-(325, 'this', 'all', NULL, NULL, '2025-01-23 07:57:24'),
-(326, 'this', 'all', NULL, NULL, '2025-01-23 07:57:38'),
-(327, 'this', 'all', NULL, NULL, '2025-01-23 07:57:39'),
-(328, 'this', 'all', NULL, NULL, '2025-01-23 07:58:02'),
-(329, 'this', 'all', NULL, NULL, '2025-01-23 07:58:22'),
-(330, 'this', 'all', NULL, NULL, '2025-01-23 07:58:39'),
-(331, 'this', 'all', NULL, NULL, '2025-01-23 07:58:54'),
-(332, 'this', 'all', NULL, NULL, '2025-01-23 07:59:09'),
-(333, 'this', 'all', NULL, NULL, '2025-01-23 07:59:10'),
-(334, 'this', 'all', NULL, NULL, '2025-01-23 07:59:28'),
-(335, 'this', 'Bipolar Disorder', NULL, NULL, '2025-01-23 07:59:34'),
-(336, 'this', 'Bipolar Disorder', NULL, NULL, '2025-01-23 07:59:36'),
-(337, 'this', 'Bipolar Disorder', NULL, NULL, '2025-01-23 07:59:37'),
-(338, 'this', 'Bipolar Disorder', NULL, NULL, '2025-01-23 07:59:38'),
-(339, 'this', 'Bipolar Disorder', NULL, NULL, '2025-01-23 07:59:38'),
-(340, 'this', 'general', NULL, NULL, '2025-01-23 07:59:40'),
-(341, 'this', 'all', NULL, NULL, '2025-01-23 08:33:23'),
-(342, 'sayem', 'all', NULL, NULL, '2025-01-27 06:18:26'),
-(343, 'humayun', 'all', NULL, NULL, '2025-01-27 06:35:44'),
-(344, 'humayun', 'all', NULL, NULL, '2025-01-27 06:35:47'),
-(345, 'humayun', 'all', NULL, NULL, '2025-01-27 06:35:48'),
-(346, 'schizophrenia', 'all', NULL, NULL, '2025-01-27 07:17:11'),
-(347, 'schizophrenia', 'depression', NULL, NULL, '2025-01-27 07:17:16'),
-(348, 'schizophrenia', 'Schizophrenia', NULL, NULL, '2025-01-27 07:17:20'),
-(349, 'schizophrenia', 'Schizophrenia', NULL, NULL, '2025-01-27 07:17:23'),
-(350, 'schizophrenia', 'Schizophrenia', NULL, NULL, '2025-01-27 07:17:25'),
-(351, 'schizophrenia', 'Schizophrenia', NULL, NULL, '2025-01-27 07:17:26'),
-(352, 'schizophrenia', 'Schizophrenia', NULL, NULL, '2025-01-27 07:17:27'),
-(353, 'schizophrenia', 'general', NULL, NULL, '2025-01-27 07:17:36'),
-(354, 'schizophrenia', 'Schizophrenia', NULL, NULL, '2025-01-27 07:18:40');
-
 -- --------------------------------------------------------
 
 --
@@ -1127,10 +564,6 @@ CREATE TABLE `therapy_sessions` (
 -- Dumping data for table `therapy_sessions`
 --
 
-INSERT INTO `therapy_sessions` (`session_id`, `user_id`, `therapist_id`, `session_date`, `session_type`, `duration_minutes`, `notes`) VALUES
-(2, 6, 2, '2025-01-30 12:46:00', 'Speech and Language Therapy', 30, ''),
-(3, 6, 3, '2025-01-28 12:48:00', 'ABA therapy', 20, '');
-
 -- --------------------------------------------------------
 
 --
@@ -1145,7 +578,7 @@ CREATE TABLE `user` (
   `first_name` varchar(50) DEFAULT NULL,
   `last_name` varchar(50) DEFAULT NULL,
   `bio` text DEFAULT NULL,
-  `profile_photo` varchar(255) DEFAULT 'default-profile.png',
+  `profile_photo` varchar(255) DEFAULT 'default-profile.svg',
   `cover_photo` varchar(255) DEFAULT 'default-cover.png',
   `location` varchar(100) DEFAULT NULL,
   `children_details` text DEFAULT NULL,
@@ -1159,12 +592,6 @@ CREATE TABLE `user` (
 --
 -- Dumping data for table `user`
 --
-
-INSERT INTO `user` (`user_id`, `username`, `password`, `email`, `first_name`, `last_name`, `bio`, `profile_photo`, `cover_photo`, `location`, `children_details`, `phone`, `date_of_birth`, `gender`, `created_at`, `updated_at`) VALUES
-(3, 'Sayem', '$2y$10$B58/WM/l3lQBoF88A2DQF..AwaIO8Z.Pf8gAMTU3BnorA0rZVM8mW', 'sayemreza64656@gmail.com', 'Sayem1', 'Reza', 'A Father, Creator of this site.', 'profile_3_1736290445_366281411_182972191458640_3184501897832931941_n.jpg', NULL, 'dhaka', 'Two years old, surviving with ADHD', '', '2024-07-09', 'male', '2025-01-07 16:55:10', '2025-01-18 16:17:18'),
-(4, 'sayemreza', '$2y$10$VGe2rc2lUFcV19aTRll6nO5ongMFxfK75.LqWU1gPe4y80amw9rBa', 'sayemreza646@gmail.com', NULL, NULL, NULL, 'default-profile.png', 'default-cover.png', NULL, NULL, NULL, NULL, NULL, '2025-01-08 14:49:14', '2025-01-23 05:47:12'),
-(5, 'sayma', '$2y$10$5nycevJhiVIdoq3xGtPwF.qZs3g/bsToL85LNxv4oIaBZaBCqowJG', 'saymasultanaisra@gmail.com', '', '', '', NULL, 'default-cover.png', '', '', '', '0000-00-00', '', '2025-01-23 16:31:32', '2025-01-27 07:08:08'),
-(6, 'humayun', '$2y$10$oon45cW7fWcT6QsipTfIA.fzn4.acyct5dkxgUQGqoTb93.5VSAH.', 'humayun@gmail.com', 'Humayun', '', '', 'profile_6_1737960060_OIP (1).jpg', 'default-cover.png', 'Dhaka', 'Have 3 children .THe younger one coping with ADHD.', '', '0000-00-00', 'male', '2025-01-27 06:39:29', '2025-01-27 06:41:52');
 
 -- --------------------------------------------------------
 
@@ -1522,7 +949,7 @@ ALTER TABLE `therapy_sessions`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- AUTO_INCREMENT for table `user_actions`
@@ -1591,3 +1018,17 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+
+-- Private parent-to-parent / parent-to-expert messaging
+CREATE TABLE IF NOT EXISTS `messages` (
+  `message_id` int(11) NOT NULL AUTO_INCREMENT,
+  `sender_id` int(11) NOT NULL,
+  `receiver_id` int(11) NOT NULL,
+  `message` text NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `is_read` tinyint(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`message_id`),
+  KEY `idx_messages_conversation` (`sender_id`,`receiver_id`,`created_at`),
+  KEY `idx_messages_inbox` (`receiver_id`,`is_read`,`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

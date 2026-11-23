@@ -2,11 +2,11 @@
 // Include the database connection
 include_once '../../config/config.php';
 
-session_start();
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
 
 // Check if the user is logged in
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
+    header("Location: ../../auth/login.php");
     exit();
 }
 
@@ -227,9 +227,9 @@ $active_users_result = $conn->query($active_users_query);
 
     <div class="stats">
         <h2>Participation Statistics</h2>
-        <p>Total Participants: <strong><?php echo isset($stats['total_participants']) ? $stats['total_participants'] : 0; ?></strong></p>
+        <p>Total participants: <strong><?php echo isset($stats['total_participants']) ? $stats['total_participants'] : 0; ?></strong></p>
         <p>Unique Users: <strong><?php echo isset($stats['unique_users']) ? $stats['unique_users'] : 0; ?></strong></p>
-        <p>Most Active User ID: <strong><?php echo isset($most_active['user_id']) ? $most_active['user_id'] : "N/A"; ?></strong></p>
+        <p>Most Active user ID: <strong><?php echo isset($most_active['user_id']) ? $most_active['user_id'] : "N/A"; ?></strong></p>
         <p>Most Active Participant: <strong><?php echo isset($most_active['username']) ? $most_active['username'] : "N/A"; ?></strong> 
            (<?php echo isset($most_active['participation_count']) ? $most_active['participation_count'] : 0; ?> participations)</p>
     </div>
@@ -238,7 +238,7 @@ $active_users_result = $conn->query($active_users_query);
     <table>
         <thead>
             <tr>
-                <th>User ID</th>
+                <th>user ID</th>
                 <th>Username</th>
                 <th>Participation Count</th>
             </tr>
